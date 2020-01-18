@@ -4,3 +4,4 @@
 from .version import VERSION as __version__
 from .colors import generate_colors
 from .heatmap import plot_heatmap, annotate_heatmap, heatmap
+from .scatter import plot_3d_scatter, generate_3d_scatter, plot_scatter

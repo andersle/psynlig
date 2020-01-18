@@ -1,0 +1,45 @@
+# Copyright (c) 2020, Anders Lervik.
+# Distributed under the MIT License. See LICENSE for more info.
+"""An example of generating scatter plots of raw data."""
+from matplotlib import pyplot as plt
+import pandas as pd
+from sklearn.datasets import load_iris
+from psynlig import plot_scatter
+plt.style.use('seaborn-talk')
+
+
+def load_iris_set():
+    """Set up the data set."""
+    data_set = load_iris()
+    data = pd.DataFrame(data_set['data'], columns=data_set['feature_names'])
+    return data, data_set
+
+
+def main():
+    """Generate the heat map."""
+    data, data_set = load_iris_set()
+    plot_scatter(
+        data,
+        'sepal length (cm)',
+        'sepal width (cm)',
+        marker='o',
+        s=200,
+        alpha=0.7
+    ) 
+    class_data = data_set['target']
+    class_names = {i: name for i, name in enumerate(data_set['target_names'])}
+    plot_scatter(
+        data,
+        'sepal length (cm)',
+        'sepal width (cm)',
+        class_names=class_names,
+        class_data =class_data,
+        marker='o',
+        s=200,
+        alpha=0.7
+    )
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()

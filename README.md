@@ -23,5 +23,5 @@ plt.show()
 
 will generate the following figure:
 
-![heatmap](examples/heatmap_example.png)
+![heatmap](examples/heat_correlation/heatmap_example.png)
 
