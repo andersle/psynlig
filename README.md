@@ -9,7 +9,7 @@ A library for creating plots with
 ### Generating a heat map for correlations
 
 The following code
-```python
+```python examples/heat_correlation/heat_correlation_readme.py
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
@@ -31,7 +31,7 @@ will generate a heat map for identifying correlations:
 ### Generating scatter plots for raw data
 
 The following code
-```python
+```python examples/scatter/scatter_readme_3d.py
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
@@ -53,7 +53,7 @@ will generate a 3D scatter plot of the selected variables:
 ![scatter3d](examples/scatter/scatter3d.png)
 
 And the following code
-```python
+```python examples/scatter/scatter_readme_2d.py
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
@@ -78,7 +78,7 @@ will generate 2D scatter plots for combinations of the selected variables:
 ### Generating histograms
 
 The following code
-```python
+```python examples/histogram/histogram_readme.py
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
