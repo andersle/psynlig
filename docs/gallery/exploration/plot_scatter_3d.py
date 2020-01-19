@@ -1,8 +1,8 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-Generating 3D scatter plots of raw data
-=======================================
+Generating 3D scatter plots
+===========================
 
 This example uses the method :py:meth:`psynlig.scatter.plot_3d_scatter`
 for explorative plotting of raw data using three variables

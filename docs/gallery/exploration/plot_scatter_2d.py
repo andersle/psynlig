@@ -22,7 +22,7 @@ to the plot and the calculated
 is shown in the plot (as :math:`R^2`). In addition, the calculated
 `Pearson correlation
 coefficient <https://en.wikipedia.org/wiki/Pearson_correlation_coefficient>`_
-is also shown (:math:`\rho`)`.
+is also shown (:math:`\rho`).
 """
 from matplotlib import pyplot as plt
 import pandas as pd
