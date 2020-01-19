@@ -1,6 +1,6 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
-"""A module defining helper metods for setting up colors."""
+"""A module defining helper methods for setting up colors."""
 from matplotlib.cm import get_cmap
 import numpy as np
 

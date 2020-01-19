@@ -1,6 +1,6 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
-"""A module defining common methods"""
+"""A module defining common methods."""
 from math import ceil
 from matplotlib import pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -33,7 +33,7 @@ def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
     """Create a set of figures and axes.
 
     The number of plots per figure is limited to the given parameter
-    for maximum number of plots.
+    ``max_plots``.
 
     Parameters
     ----------
@@ -50,9 +50,9 @@ def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
 
     Returns
     -------
-    figures : list of object like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures created here.
-    axes : list of object like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like py:class:`matplotlib.axes.Axes`
         The axes created here.
 
     """

@@ -13,7 +13,7 @@ from .common import create_fig_and_axes, add_xy_line, add_trendline
 _MAX_PLOTS = 5
 _MAX_PLOTS_SCATTER = 4
 _WARNING_MAX_PLOTS = (
-    'This will generate {0} plots. If you really want to generate '
+    'This will generate {0} plots. If you want to generate '
     'all these plots, rerun the function with the '
     'argument "max_plots={0}".'
 )
@@ -73,8 +73,8 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
     yvar : string
         The column to use as the y-variable.
     axi : object like py:class:`matplotlib.axes.Axes`, optional
-        An axes to add the plot to. If this is not provided,
-        a new axis (and figure) will be created here
+        An axis to add the plot to. If this is not provided,
+        a new axis (and figure) will be created here.
     class_data : object like, optional
         Class information for the points (if available).
     class_names : dict of strings
@@ -82,7 +82,7 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
     show_legend : boolean
         If True, we will create a legend here and show it.
     xy_line : boolean, optional
-        If True, we will add a x==y line to the plot.
+        If True, we will add a x=y line to the plot.
     trendline : boolean, optional
         If True, we will add a trend line to the plot.
     kwargs : dict, optional
@@ -151,7 +151,7 @@ def generate_scatter(data, variables, class_data=None, class_names=None,
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
     max_plots : integer, optional
-        The maximun number of plots in a figure.
+        The maximum number of plots in a figure.
     ncol : integer, optional
         The number of columns to use in a figure.
     sharex : boolean, optional
@@ -163,16 +163,16 @@ def generate_scatter(data, variables, class_data=None, class_names=None,
 
     Returns
     -------
-    figures : list of object like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of object like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like py:class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
-
     nplots = comb(len(variables), 2, exact=True)
-    figures, axes = create_fig_and_axes(nplots, max_plots, ncol=ncol,
-                                        sharex=sharex, sharey=sharey)
+    figures, axes = create_fig_and_axes(
+        nplots, max_plots, ncol=ncol, sharex=sharex, sharey=sharey
+    )
 
     fig = None
     for i, (xvar, yvar) in enumerate(combinations(variables, 2)):
@@ -276,9 +276,9 @@ def generate_3d_scatter(data, variables, class_data=None, class_names=None,
 
     Returns
     -------
-    figures : list of object like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures created here.
-    axes : list of object like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like py:class:`matplotlib.axes.Axes`
         The axes created here.
 
     """
