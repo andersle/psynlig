@@ -1,6 +1,6 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
-"""A module for generating scatter plots of varialbes."""
+"""A module for generating scatter plots of variables."""
 from itertools import combinations
 import warnings
 import numpy as np
@@ -53,7 +53,7 @@ def _generate_class_colors(class_data):
 
 def create_scatter_legend(axi, color_labels, class_names, show=False,
                           **kwargs):
-    """Generate a legend for a scatter plot. with class labels.
+    """Generate a legend for a scatter plot with class labels.
 
     Parameters
     ----------
@@ -116,7 +116,7 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
     xy_line : boolean, optional
         If True, we will add a x==y line to the plot.
     trendline : boolean, optional
-        If True, we will add a trendline to the plot.
+        If True, we will add a trend line to the plot.
     kwargs : dict, optional
         Additional settings for the plotting.
 
