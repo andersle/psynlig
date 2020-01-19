@@ -7,13 +7,20 @@ Welcome to |psynlig|'s documentation!
 =====================================
 
 |psynlig| is a small package for generating plots
-using `matplotlib <https://www.matplotlib.org/>`_..
+using `matplotlib <https://www.matplotlib.org/>`_. It is
+intended as a library of plotting functions that can be
+used to streamline investigation of data sets, for instance
+by :ref:`creating heat maps <api-heatmap>` or plotting results from
+`principal component analysis <https://en.wikipedia.org/wiki/Principal_component_analysis>`_:
+
+.. image:: /_static/api/wine1.png
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   source/psynlig.rst
+   source/psynlig
+   auto_examples/index
 
 
 Indices and tables

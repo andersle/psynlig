@@ -5,7 +5,12 @@ The |psynlig| library
 #####################
 
 
-This is the documentation for the |psynlig| library.
+This is the documentation for the source code
+of the |psynlig| library. Some examples are given
+here (see the different :ref:`modules below <psynlig-modules>`)
+and in the :ref:`example gallery <examples-index>`. 
+
+.. _psynlig-modules:
 
 |psynlig| modules
 -----------------

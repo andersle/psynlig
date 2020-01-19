@@ -13,19 +13,34 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
+import sys
+from datetime import date
+import warnings
 import psynlig
+
+# Disable matplotlib warnings for generation of gallery:
+warnings.filterwarnings(
+    'ignore',
+    category=UserWarning,
+    message='Matplotlib is currently using agg, which is a'
+            ' non-GUI backend, so cannot show the figure.'
+)
 
 # -- Project information -----------------------------------------------------
 
 project = 'psynlig'
-copyright = '2020, Anders Lervik'
+
+year = date.today().year
+if year > 2020:
+    copyright = '2020-{}, Anders Lervik'.format(year)
+else:
+    copyright = '2020, Anders Lervik'
 author = 'Anders Lervik'
 
 rst_prolog = '.. |psynlig| replace:: psynlig'
 # The full version, including alpha/beta/rc tags
 version = psynlig.version.SHORT_VERSION
 release = psynlig.version.VERSION
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -36,6 +51,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # Napoleon settings
@@ -56,7 +73,6 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -68,3 +84,21 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
+    'sklearn': ('https://scikit-learn.org/stable', None),
+    'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
+    'pandas': ('https://pandas.pydata.org/', None),
+}
+
+# Settings for gallery:
+sphinx_gallery_conf = {
+    'examples_dirs': 'gallery',
+    'gallery_dirs': 'auto_examples',
+    'download_all_examples': False,
+}
