@@ -27,7 +27,7 @@ warnings.filterwarnings(
 )
 
 # -- Project information -----------------------------------------------------
-
+master_doc = 'index'
 project = 'psynlig'
 
 year = date.today().year
