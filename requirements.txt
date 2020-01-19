@@ -4,3 +4,6 @@ scipy
 pandas
 sklearn
 jupyter
+sphinx
+sphinx_rtd_theme
+sphinx-gallery

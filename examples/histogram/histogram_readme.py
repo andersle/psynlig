@@ -1,6 +1,6 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
-"""An example of generating scatter plots of raw data."""
+"""An example of generating histogram plots of raw data."""
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
