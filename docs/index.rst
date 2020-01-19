@@ -11,7 +11,7 @@ using `matplotlib <https://www.matplotlib.org/>`_. It is
 intended as a library of plotting functions that can be
 used to streamline investigation of data sets, for instance
 by :ref:`creating heat maps <api-heatmap>` or plotting results from
-`principal component analysis <https://en.wikipedia.org/wiki/Principal_component_analysis>`_:
+:ref:`principal component analysis <api-pca>`:
 
 .. image:: /_static/api/wine1.png
 

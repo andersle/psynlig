@@ -23,6 +23,7 @@ and in the :ref:`example gallery <examples-index>`.
    psynlig.common
    psynlig.heatmap
    psynlig.histogram
+   psynlig.pca
    psynlig.scatter
    psynlig.version
 
@@ -39,6 +40,11 @@ The |psynlig| package is structured into modules as follows:
 
 * :ref:`psynlig.histogram <api-histogram>` for creating
   histograms of (possibly labelled) data.
+
+* :ref:`psynlig.pca <api-pca>` for creating
+  plots showing results from 
+  `principal component analysis
+  <https://en.wikipedia.org/wiki/Principal_component_analysis>`_.
 
 * :ref:`psynlig.scatter <api-scatter>` for creating
   scatter plots (in 2D and 3D) of (possibly labelled) data.

@@ -11,3 +11,4 @@ from .scatter import (
     generate_scatter,
 )
 from .histogram import histograms
+from .pca import pca_explained_variance
