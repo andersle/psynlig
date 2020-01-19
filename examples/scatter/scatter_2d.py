@@ -4,7 +4,7 @@
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
-from psynlig import plot_3d_scatter, generate_3d_scatter
+from psynlig import plot_scatter, generate_scatter
 plt.style.use('seaborn-talk')
 
 
@@ -18,24 +18,22 @@ def load_iris_set():
 def main():
     """Generate the heat map."""
     data, data_set = load_iris_set()
-    plot_3d_scatter(
+    plot_scatter(
         data,
         'sepal length (cm)',
         'sepal width (cm)',
-        'petal length (cm)',
         marker='o',
         s=200,
         alpha=0.7
-    ) 
+    )
     class_data = data_set['target']
-    class_names = {i: name for i, name in enumerate(data_set['target_names'])}
-    plot_3d_scatter(
+    class_names = dict(enumerate(data_set['target_names']))
+    plot_scatter(
         data,
         'sepal length (cm)',
         'sepal width (cm)',
-        'petal length (cm)',
         class_names=class_names,
-        class_data =class_data,
+        class_data=class_data,
         marker='o',
         s=200,
         alpha=0.7
@@ -46,11 +44,17 @@ def main():
         'petal length (cm)',
         'petal width (cm)',
     ]
-    generate_3d_scatter(data, variables, class_data=class_data, class_names=class_names,
-                          marker='o', s=200, alpha=0.7)
-    generate_3d_scatter(data, variables, class_data=class_data, class_names=class_names,
-                        force=True,
-                        marker='o', s=200, alpha=0.7)
+    generate_scatter(
+        data,
+        variables,
+        class_names=class_names,
+        class_data=class_data,
+        max_plot_scatter=6,
+        ncol=3,
+        marker='o',
+        s=200,
+        alpha=0.7,
+    )
     plt.show()
 
 

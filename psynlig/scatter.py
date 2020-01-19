@@ -5,16 +5,18 @@ from itertools import combinations
 import warnings
 import numpy as np
 from matplotlib import pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 from scipy.special import comb
 from .colors import generate_colors
+from .common import create_fig_and_axes, add_xy_line, add_trendline
 
 
 _MAX_PLOTS = 5
+_MAX_PLOTS_SCATTER = 4
 _WARNING_MAX_PLOTS = (
-    'This will generate {} plots. If you really want to generate '
+    'This will generate {0} plots. If you really want to generate '
     'all these plots, rerun the function with the '
-    'argument "force=True".'
+    'argument "max_plots={0}".'
 )
 
 
@@ -23,17 +25,17 @@ def _generate_class_colors(class_data):
 
     Parameters
     ----------
-    class_data : object like :py:class:``, optional
-        The labels for the data.
+    class_data : object like :py:class:`numpy.ndarray` or None
+        The (numeric) labels for the data.
 
     Returns
     -------
-    color_class : list of numpy.arrays
+    color_class : list of objects like :py:class:`numpy.ndarray`
         The colors generated.
-    color_labels : dict of numpy.arrays
+    color_labels : dict of objects like :py:class:`numpy.ndarray`
         Colors for the different classes.
     idx_class : dict of integers
-        Indexes for data classes.
+        Indices for data classes.
 
     """
     classes = None
@@ -49,8 +51,32 @@ def _generate_class_colors(class_data):
     return color_class, color_labels, idx_class
 
 
-def _generate_scatter_legend(axi, color_labels, class_names, **kwargs):
-    """Generate legend for a scatter plot."""
+def create_scatter_legend(axi, color_labels, class_names, show=False,
+                          **kwargs):
+    """Generate a legend for a scatter plot. with class labels.
+
+    Parameters
+    ----------
+    axi : object like py:class:`matplotlib.axes.Axes`
+        The axes we will add the legend for.
+    color_labels : dict of objects like :py:class:`numpy.ndarray`
+        Colors for the different classes.
+    color_names : dict of strings
+        Names for the classes.
+    show : boolean, optional
+        If True, we will add the legend here.
+    kwargs : dict, optional
+        Additional arguments passed to the scatter method. Used
+        here to get a consistent styling.
+
+    Returns
+    -------
+    patches : list of objects like :py:class:`matplotlib.artist.Artist`
+        The items we will create a legend for.
+    labels : list of strings
+        The labels for the legend.
+
+    """
     patches, labels = [], []
     for key, val in color_labels.items():
         patches.append(
@@ -61,30 +87,41 @@ def _generate_scatter_legend(axi, color_labels, class_names, **kwargs):
         else:
             label = key
         labels.append(label)
+    if show:
+        axi.legend(patches, labels)
     return patches, labels
 
 
 def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
-                 **kwargs):
+                 show_legend=True, xy_line=True, trendline=True, **kwargs):
     """Make a 2D scatter plot of the given data.
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.DataFrame`
+    data : object like :py:class:`pandas.core.frame.DataFrame`
         The data we are plotting.
     xvar : string
         The column to use as the x-variable.
     yvar : string
         The column to use as the y-variable.
-    axi : object like :py:class:``, optional
+    axi : object like py:class:`matplotlib.axes.Axes`, optional
         An axes to add the plot to. If this is not provided,
         a new axis (and figure) will be created here
     class_data : object like, optional
         Class information for the points (if available).
     class_names : dict of strings
         A mapping from the class data to labels/names.
+    show_legend : boolean
+        If True, we will create a legend here and show it.
+    xy_line : boolean, optional
+        If True, we will add a x==y line to the plot.
+    trendline : boolean, optional
+        If True, we will add a trendline to the plot.
+    kwargs : dict, optional
+        Additional settings for the plotting.
 
     """
+    patches, labels = [], []
     color_class, color_labels, idx_class = _generate_class_colors(class_data)
     fig = None
     if axi is None:
@@ -101,22 +138,82 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
                 color=color_class[class_id],
                 **kwargs
             )
-        patches, labels = _generate_scatter_legend(
+        patches, labels = create_scatter_legend(
             axi, color_labels, class_names, **kwargs
         )
+    if xy_line:
+        line_xy = add_xy_line(axi, alpha=0.7, color='black')
+        patches.append(line_xy)
+        labels.append('x == y')
+    if trendline:
+        line_trend = add_trendline(axi, data[xvar], data[yvar],
+                                   alpha=0.7, ls='--', color='black')
+        patches.append(line_trend)
+        labels.append('y = a + bx')
+    if show_legend and patches and labels:
         axi.legend(patches, labels)
     if fig is not None:
         fig.tight_layout()
     return fig, axi
 
 
-def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None, class_names=None,
-                    **kwargs):
+def generate_scatter(data, variables, class_data=None, class_names=None,
+                     max_plot_scatter=6, ncol=3, **kwargs):
+    """Generate 2D scatter plots from the given data and variables.
+
+    This method will generate 2D scatter plots for all combinations
+    of the given variables.
+
+    Parameters
+    ----------
+    data : object like :py:class:`pandas.core.frame.DataFrame`
+        The data we will plot here.
+    variables : list of strings
+        The variables we will generate scatter plots for.
+    class_data : object like, optional
+        Class information for the points (if available).
+    class_names : dict of strings, optional
+        A mapping from the class data to labels/names.
+    max_plot_scatter : integer
+        The maximun number of plots in a figure.
+    ncol : integer
+        The number of columns to use in a figure.
+    kwargs : dict, optional
+        Additional arguments used for the plotting.
+
+    """
+
+    nplots = comb(len(variables), 2, exact=True)
+    figures, axes = create_fig_and_axes(nplots, max_plot_scatter, ncol=ncol)
+
+    fig = None
+    for i, (xvar, yvar) in enumerate(combinations(variables, 2)):
+        show_legend = False
+        if axes[i].figure != fig:
+            fig = axes[i].figure
+            show_legend = True
+        plot_scatter(
+            data,
+            xvar,
+            yvar,
+            axi=axes[i],
+            class_data=class_data,
+            class_names=class_names,
+            show_legend=show_legend,
+            **kwargs
+        )
+    for figi in figures:
+        figi.tight_layout()
+    return figures, axes
+
+
+def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
+                    class_names=None, **kwargs):
     """Make a 3D scatter plot of the given data.
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.DataFrame`
+    data : object like :py:class:`pandas.core.frame.DataFrame`
         The data we are plotting.
     xvar : string
         The column to use as the x-variable.
@@ -126,8 +223,17 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None, class_names=None,
         The column to use as the z-variable
     class_data : object like, optional
         Class information for the points (if available).
-    class_names : dict of strings
+    class_names : dict of strings, optional
         A mapping from the class data to labels/names.
+    kwargs : dict, optional
+        Additional arguments used for the plotting.
+
+    Returns
+    -------
+    fig : object like :py:class:`matplotlib.figure.Figure`
+        The figure containing the plot.
+    axi : object like py:class:`matplotlib.axes.Axes`, optional
+        The axis containing the plot.
 
     """
     color_class, color_labels, idx_class = _generate_class_colors(class_data)
@@ -148,17 +254,46 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None, class_names=None,
                 color=color_class[class_id],
                 **kwargs
             )
-        patches, labels = _generate_scatter_legend(
-            axi, color_labels, class_names, **kwargs
+        create_scatter_legend(
+            axi, color_labels, class_names, show=True, **kwargs
         )
-        axi.legend(patches, labels)
     fig.tight_layout()
     return fig, axi
 
 
 def generate_3d_scatter(data, variables, class_data=None, class_names=None,
-                        force=False, **kwargs):
-    """Generate 3D scatter plots from the given data and variables."""
+                        max_plots=_MAX_PLOTS, **kwargs):
+    """Generate 3D scatter plots from the given data and variables.
+
+    This method will generate 3D scatter plots for all combinations
+    of the given variables. Note that if the number of plots is large,
+    then no plots will be generated and a warning will be issued. The
+    maximum number of plots to create can be set with the parameter
+    `max_plots`
+
+    Parameters
+    ----------
+    data : object like :py:class:`pandas.core.frame.DataFrame`
+        The data we will plot here.
+    variables : list of strings
+        The variables we will generate scatter plots for.
+    class_data : object like, optional
+        Class information for the points (if available).
+    class_names : dict of strings, optional
+        A mapping from the class data to labels/names.
+    max_plots : integer, optional
+        The maximum number of plots to create.
+    kwargs : dict, optional
+        Additional arguments used for the plotting.
+
+    Returns
+    -------
+    figures : list of object like :py:class:`matplotlib.figure.Figure`
+        The figures created here.
+    axes : list of object like py:class:`matplotlib.axes.Axes`
+        The axes created here.
+
+    """
     figures = []
     axes = []
     if len(variables) < 3:
@@ -166,7 +301,7 @@ def generate_3d_scatter(data, variables, class_data=None, class_names=None,
             'For generating 3D plots, at least 3 variables must be provided.'
         )
     nplots = comb(len(variables), 3, exact=True)
-    if nplots > _MAX_PLOTS and not force:
+    if nplots > max_plots:
         msg = _WARNING_MAX_PLOTS.format(nplots)
         warnings.warn(msg)
         return figures, axes

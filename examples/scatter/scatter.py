@@ -1,33 +1,6 @@
-# psynlig
-
-A library for creating plots with matplotlib.
-
-## Examples
-
-### Generating a heat map for correlations
-The following code
-```python
-from matplotlib import pyplot as plt
-import pandas as pd
-from sklearn.datasets import load_iris
-from psynlig import plot_heatmap
-plt.style.use('seaborn-talk')
-
-
-data_set = load_iris()
-data = pd.DataFrame(data_set['data'], columns=data_set['feature_names'])
-fig, _ = plot_heatmap(data, vmin=-1, vmax=1, textcolors=['white', 'black'])
-fig.savefig('heatmap_example.png', bbox_inches='tight')
-plt.show()
-```
-
-will generate the following figure:
-
-![heatmap](examples/heat_correlation/heatmap_example.png)
-
-## Generating scatter plots for raw data
-The following code
-```python
+# Copyright (c) 2020, Anders Lervik.
+# Distributed under the MIT License. See LICENSE for more info.
+"""An example of generating scatter plots of raw data."""
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
@@ -69,10 +42,3 @@ generate_scatter(
     alpha=0.7,
 )
 plt.show()
-```
-
-will generate the following figures:
-
-![scatter3d](examples/scatter/scatter3d.png)
-![scatter2d](examples/scatter/scatter2d.png)
-
