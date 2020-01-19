@@ -1,6 +1,8 @@
 # psynlig
 
-A library for creating plots with matplotlib.
+A library for creating plots with
+[matplotlib](https://matplotlib.org/).
+
 
 ## Examples
 
@@ -22,7 +24,7 @@ fig.savefig('heatmap_example.png', bbox_inches='tight')
 plt.show()
 ```
 
-will generate the following figure:
+will generate a heat map for identifying correlations:
 
 ![heatmap](examples/heat_correlation/heatmap_example.png)
 
@@ -46,7 +48,7 @@ plot_3d_scatter(data, 'sepal length (cm)', 'sepal width (cm)',
                 class_data=class_data, marker='o', s=200, alpha=0.7)
 plt.show()
 ```
-will generate the following figure:
+will generate a 3D scatter plot of the selected variables:
 
 ![scatter3d](examples/scatter/scatter3d.png)
 
@@ -70,7 +72,7 @@ generate_scatter(data, variables, class_names=class_names,
 plt.show()
 ```
 
-will generate the following figure:
+will generate 2D scatter plots for combinations of the selected variables:
 ![scatter2d](examples/scatter/scatter2d.png)
 
 ### Generating histograms
@@ -97,5 +99,5 @@ figs[0].savefig('histogram.png', bbox_inches='tight')
 plt.show()
 ```
 
-will generate the following figure:
+will generate histograms for the selected variables:
 ![histogram](examples/histogram/histogram.png)
