@@ -1,6 +1,6 @@
 .. _examples-index:
 
-Examples
-========
+Example gallery
+===============
 
 Below, you will find some examples of the usage of |psynlig|.
