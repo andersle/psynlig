@@ -14,12 +14,13 @@ HERE = pathlib.Path(__file__).parent.resolve()
 
 
 def get_long_description():
-    """Return the contents of the README.md file."""
-    # Get the long description from the README file
-    long_description = ''
-    readme = HERE.joinpath('README.md')
-    with open(readme, 'r') as fileh:
-        long_description = fileh.read()
+    """Hard-coded long description."""
+    long_description = (
+        'psynlig is a small package for generating '
+        'plots using `matplotlib <https://www.matplotlib.org/>`_. '
+        'It is intended as a library of plotting functions that can be '
+        'used to streamline investigation of data sets.'
+    )
     return long_description
 
 
