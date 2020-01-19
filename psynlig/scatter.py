@@ -3,11 +3,10 @@
 """A module for generating scatter plots of variables."""
 from itertools import combinations
 import warnings
-import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 from scipy.special import comb
-from .colors import generate_colors
+from .colors import generate_class_colors
 from .common import create_fig_and_axes, add_xy_line, add_trendline
 
 
@@ -18,37 +17,6 @@ _WARNING_MAX_PLOTS = (
     'all these plots, rerun the function with the '
     'argument "max_plots={0}".'
 )
-
-
-def _generate_class_colors(class_data):
-    """Generate colors for classes.
-
-    Parameters
-    ----------
-    class_data : object like :py:class:`numpy.ndarray` or None
-        The (numeric) labels for the data.
-
-    Returns
-    -------
-    color_class : list of objects like :py:class:`numpy.ndarray`
-        The colors generated.
-    color_labels : dict of objects like :py:class:`numpy.ndarray`
-        Colors for the different classes.
-    idx_class : dict of integers
-        Indices for data classes.
-
-    """
-    classes = None
-    color_class = None
-    color_labels = {}
-    idx_class = {}
-    if class_data is not None:
-        classes = list(set(class_data))
-        color_class = generate_colors(len(classes))
-        for i in classes:
-            color_labels[i] = color_class[i]
-            idx_class[i] = np.where(class_data == i)[0]
-    return color_class, color_labels, idx_class
 
 
 def create_scatter_legend(axi, color_labels, class_names, show=False,
@@ -120,9 +88,16 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
     kwargs : dict, optional
         Additional settings for the plotting.
 
+    Returns
+    -------
+    fig : object like :py:class:`matplotlib.figure.Figure`
+        The figure containing the plot.
+    axi : object like py:class:`matplotlib.axes.Axes`
+        The axis containing the plot.
+
     """
     patches, labels = [], []
-    color_class, color_labels, idx_class = _generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(class_data)
     fig = None
     if axi is None:
         fig, axi = plt.subplots()
@@ -144,7 +119,7 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
     if xy_line:
         line_xy = add_xy_line(axi, alpha=0.7, color='black')
         patches.append(line_xy)
-        labels.append('x == y')
+        labels.append('x = y')
     if trendline:
         line_trend = add_trendline(axi, data[xvar], data[yvar],
                                    alpha=0.7, ls='--', color='black')
@@ -158,7 +133,8 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
 
 
 def generate_scatter(data, variables, class_data=None, class_names=None,
-                     max_plot_scatter=6, ncol=3, **kwargs):
+                     max_plots=6, ncol=3, sharex=False, sharey=False,
+                     **kwargs):
     """Generate 2D scatter plots from the given data and variables.
 
     This method will generate 2D scatter plots for all combinations
@@ -174,17 +150,29 @@ def generate_scatter(data, variables, class_data=None, class_names=None,
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
-    max_plot_scatter : integer
+    max_plots : integer, optional
         The maximun number of plots in a figure.
-    ncol : integer
+    ncol : integer, optional
         The number of columns to use in a figure.
+    sharex : boolean, optional
+        If True, the scatter plots will share the x-axis.
+    sharey : boolean, optional
+        If True, the scatter plots will share the y-axis.
     kwargs : dict, optional
         Additional arguments used for the plotting.
+
+    Returns
+    -------
+    figures : list of object like :py:class:`matplotlib.figure.Figure`
+        The figures containing the plots.
+    axes : list of object like py:class:`matplotlib.axes.Axes`
+        The axes containing the plots.
 
     """
 
     nplots = comb(len(variables), 2, exact=True)
-    figures, axes = create_fig_and_axes(nplots, max_plot_scatter, ncol=ncol)
+    figures, axes = create_fig_and_axes(nplots, max_plots, ncol=ncol,
+                                        sharex=sharex, sharey=sharey)
 
     fig = None
     for i, (xvar, yvar) in enumerate(combinations(variables, 2)):
@@ -236,7 +224,7 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
         The axis containing the plot.
 
     """
-    color_class, color_labels, idx_class = _generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(class_data)
     fig = plt.figure()
     axi = fig.add_subplot(111, projection='3d')
     axi.set_xlabel(xvar, labelpad=15)

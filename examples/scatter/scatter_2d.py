@@ -49,7 +49,7 @@ def main():
         variables,
         class_names=class_names,
         class_data=class_data,
-        max_plot_scatter=6,
+        max_plots=6,
         ncol=3,
         marker='o',
         s=200,

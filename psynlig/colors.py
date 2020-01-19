@@ -36,3 +36,34 @@ def generate_colors(ncolors, cmap_name=None):
         return cmap(np.linspace(0, 1, 20))
     cmap = get_cmap(name='viridis')
     return cmap(np.linspace(0, 1, ncolors))
+
+
+def generate_class_colors(class_data):
+    """Generate colors for classes.
+
+    Parameters
+    ----------
+    class_data : object like :py:class:`numpy.ndarray` or None
+        The (numeric) labels for the data.
+
+    Returns
+    -------
+    color_class : list of objects like :py:class:`numpy.ndarray`
+        The colors generated.
+    color_labels : dict of objects like :py:class:`numpy.ndarray`
+        Colors for the different classes.
+    idx_class : dict of integers
+        Indices for data classes.
+
+    """
+    classes = None
+    color_class = None
+    color_labels = {}
+    idx_class = {}
+    if class_data is not None:
+        classes = list(set(class_data))
+        color_class = generate_colors(len(classes))
+        for i in classes:
+            color_labels[i] = color_class[i]
+            idx_class[i] = np.where(class_data == i)[0]
+    return color_class, color_labels, idx_class

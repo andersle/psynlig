@@ -10,3 +10,4 @@ from .scatter import (
     plot_scatter,
     generate_scatter,
 )
+from .histogram import histograms

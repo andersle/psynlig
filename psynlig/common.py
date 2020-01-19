@@ -29,7 +29,7 @@ def create_grid(n_plots, ncol):
     return grid
 
 
-def create_fig_and_axes(nplots, max_plots, ncol=3):
+def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
     """Create a set of figures and axes.
 
     The number of plots per figure is limited to the given parameter
@@ -43,6 +43,10 @@ def create_fig_and_axes(nplots, max_plots, ncol=3):
         The maximum number of plots in a figure.
     ncol : integer
         The number of columns to create in each plot.
+    sharex : boolean
+        If True, the axes will share the x-axis.
+    sharey : boolean
+        If True, the axes will share the y-axis.
 
     Returns
     -------
@@ -65,9 +69,22 @@ def create_fig_and_axes(nplots, max_plots, ncol=3):
         nplots -= plots
         figi = plt.figure()
         figures.append(figi)
+        ax0 = None
         for j in range(plots):
             row, col = divmod(j, ncol)
-            axi = figi.add_subplot(grid[row, col])
+            if ax0 is None:
+                ax0 = axi = figi.add_subplot(grid[row, col])
+            else:
+                if sharex and sharey:
+                    axi = figi.add_subplot(grid[row, col],
+                                           sharex=ax0, sharey=ax0)
+                else:
+                    if sharex:
+                        axi = figi.add_subplot(grid[row, col], sharex=ax0)
+                    elif sharey:
+                        axi = figi.add_subplot(grid[row, col], sharey=ax0)
+                    else:
+                        axi = figi.add_subplot(grid[row, col])
             axes.append(axi)
     return figures, axes
 
@@ -117,16 +134,11 @@ def add_trendline(axi, xdata, ydata, **kwargs):
     param = np.polyfit(xdata, ydata, 1)
     yhat = np.polyval(param, xdata)
     rsq = get_rsquared(ydata, yhat)
-    xlim, ylim = axi.get_xlim(), axi.get_ylim()
     corr = pearsonr(xdata, ydata)
     text = r'R$^2$ = {:.2f}, $\rho$ = {:.2f}'.format(rsq, corr[0])
-    lim_min = np.min([axi.get_xlim(), axi.get_ylim()])
-    lim_max = np.max([axi.get_xlim(), axi.get_ylim()])
-    xpoint = np.array([lim_min, lim_max])
+    xpoint = np.array([min(xdata), max(xdata)])
     line, = axi.plot(xpoint, np.polyval(param, xpoint), **kwargs)
     axi.set_title(text)
-    axi.set_xlim(xlim)
-    axi.set_ylim(ylim)
     return line
 
 
