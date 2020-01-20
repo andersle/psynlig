@@ -1,5 +1,8 @@
 # psynlig
 
+[![Documentation Status](https://readthedocs.org/projects/psynlig/badge/?version=latest)](https://psynlig.readthedocs.io/en/latest/?badge=latest)
+
+
 A library for creating plots with
 [matplotlib](https://matplotlib.org/).
 Please see
