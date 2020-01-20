@@ -24,10 +24,13 @@ import pandas as pd
 from sklearn.datasets import load_wine as load_data
 from psynlig import plot_heatmap
 plt.style.use('seaborn-talk')
+
+
 data_set = load_data()
 data = pd.DataFrame(data_set['data'], columns=data_set['feature_names'])
+
 fig, _ = plot_heatmap(data, vmin=-1, vmax=1, textcolors=['white', 'black'],
-             cmap='viridis')
+                      cmap='viridis')
 # Increase figure size:
 fig.set_size_inches(14, 10)
 fig.tight_layout()
