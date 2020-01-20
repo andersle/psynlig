@@ -166,7 +166,7 @@ def main(bump=False):
     version = {
         'major': 0,
         'minor': 0,
-        'micro': 1,
+        'micro': 3,
         'dev': 0,
         'is_released': True,
         'version': None,

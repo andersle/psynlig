@@ -1,8 +1,4 @@
-.. psynlig documentation master file, created by
-   sphinx-quickstart on Sun Jan 19 18:20:14 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+=====================================
 Welcome to |psynlig|'s documentation!
 =====================================
 
@@ -15,13 +11,28 @@ by :ref:`creating heat maps <api-heatmap>` or plotting results from
 
 .. image:: /_static/api/wine1.png
 
+Installing |psynlig|
+====================
+
+|psynlig| can be installed via `pip <https://pypi.org/project/psynlig/>`_:
+
+.. code-block:: bash
+
+    $ pip install psynlig
+
+Obtaining the source code
+=========================
+
+The source code for |psynlig| can be found in the 
+`Github repository
+<https://github.com/andersle/psynlig>`_.
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Documentation:
 
-   source/psynlig
    auto_examples/index
-
+   source/psynlig
 
 Indices and tables
 ==================

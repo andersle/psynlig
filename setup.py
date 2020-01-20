@@ -12,6 +12,9 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent.resolve()
 
+GITHUB = 'https://github.com/andersle/psynlig'
+DOCS = 'https://psynlig.readthedocs.io/en/latest'
+
 
 def get_long_description():
     """Hard-coded long description."""
@@ -19,9 +22,11 @@ def get_long_description():
         'psynlig is a small package for generating '
         'plots using `matplotlib <https://www.matplotlib.org/>`_. '
         'It is intended as a library of plotting functions that can be '
-        'used to streamline investigation of data sets.'
+        'used to streamline investigation of data sets.\n'
+        'The psynlig documentation can be found at `{docs} <{docs}>`_'
+        ' and the source code is hosted at `{github} <{github}>`_.'
     )
-    return long_description
+    return long_description.format(docs=DOCS, github=GITHUB)
 
 
 def get_version():
@@ -50,7 +55,7 @@ setup(
     version=get_version(),
     description='A package for creating plots with matplotlib.',
     long_description=get_long_description(),
-    url='https://github.com/andersle/psynlig',
+    url=GITHUB,
     author='Anders Lervik',
     author_email='andersle@gmail.com',
     license='MIT',
@@ -64,6 +69,7 @@ setup(
         'Operating System :: POSIX',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Other/Nonlisted Topic',
     ],
     keywords='matplotlib',
