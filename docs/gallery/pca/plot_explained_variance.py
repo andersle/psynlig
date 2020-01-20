@@ -16,10 +16,14 @@ from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
 from psynlig import pca_explained_variance
 plt.style.use('seaborn-talk')
+
 data_set = load_wine()
 data = pd.DataFrame(data_set['data'], columns=data_set['feature_names'])
 data = scale(data)
+
 pca = PCA()
 pca.fit_transform(data)
+
 pca_explained_variance(pca, marker='o', markersize=16, alpha=0.8)
+
 plt.show()

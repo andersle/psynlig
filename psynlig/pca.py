@@ -7,56 +7,95 @@ import numpy as np
 from .colors import generate_colors
 
 
-def pca_explained_variance(pca, **kwargs):
+def pca_explained_variance(pca, axi=None, **kwargs):
     """Plot the explained variance as function of PCA components.
 
     Parameters
     ----------
     pca : object like :py:class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+        If given, the plot will be added to the specified axis.
+        Otherwise, a new axis (and figure) will be created here.
     kwargs : dict
         Additional settings for plotting explained variance.
 
     Returns
     -------
     fig : object like :py:class:`matplotlib.figure.Figure`
-        The figure containing the plot.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
-        The axes containing the plots.
+        The figure containing the plot, if the figure is created
+        here. Oterwise, it is None.
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The axis containing the plot.
 
     """
-    fig, axes = plt.subplots(nrows=1, ncols=2)
+    fig = None
+    if axi is None:
+        fig, axi = plt.subplots(nrows=1, ncols=1)
     var = [0] + list(np.cumsum(pca.explained_variance_ratio_))
     comp = range(0, len(var))
-    axes[1].plot(comp, var, **kwargs)
-    axes[1].axhline(y=1, color='black', ls=':')
-    axes[1].set(xlabel='Number of components', ylabel='Explained variance')
-    axes[1].xaxis.set_major_locator(MaxNLocator(integer=True))
+    axi.plot(comp, var, **kwargs)
+    axi.axhline(y=1, color='black', ls=':')
+    axi.set(xlabel='Number of components', ylabel='Explained variance')
+    axi.xaxis.set_major_locator(MaxNLocator(integer=True))
+    if fig is not None:
+        fig.tight_layout()
+    return fig, axi
 
+
+def pca_explained_variance_bar(pca, axi=None, **kwargs):
+    """Plot the explained variance per principal component.
+
+    Parameters
+    ----------
+    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+        If given, the plot will be added to the specified axis.
+        Otherwise, a new axis (and figure) will be created here.
+    kwargs : dict
+        Additional settings for plotting explained variance.
+
+    Returns
+    -------
+    fig : object like :py:class:`matplotlib.figure.Figure`
+        The figure containing the plot, if the figure is created
+        here. Oterwise, it is None.
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The axis containing the plot.
+
+    """
+    fig = None
+    if axi is None:
+        fig, axi = plt.subplots(nrows=1, ncols=1)
     var = pca.explained_variance_ratio_
     comp = ['PC{}'.format(i + 1) for i in range(len(var))]
     xpos = range(len(var))
-    axes[0].bar(xpos, var)
-    axes[0].set_xticks(xpos)
-    axes[0].set_xticklabels(
+    axi.bar(xpos, var, **kwargs)
+    axi.set_xticks(xpos)
+    axi.set_xticklabels(
         comp,
         rotation='vertical',
     )
-    axes[0].set(
+    axi.set(
         xlabel='Principal component',
         ylabel='Explained variance per component',
     )
-    fig.tight_layout()
-    return fig, axes
+    if fig is not None:
+        fig.tight_layout()
+    return fig, axi
 
 
-def pca_explained_variance_pie(pca, tol=1.0e-3):
+def pca_explained_variance_pie(pca, axi=None, tol=1.0e-3):
     """Show the explained variance as function of PCA components.
 
     Parameters
     ----------
     pca : object like :py:class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+        If given, the plot will be added to the specified axis.
+        Otherwise, a new axis (and figure) will be created here.
     tol : float, optional
         A tolerance for the missing variance. If the unexplained
         variance is less than this tolerance, it will not be shown.
@@ -64,12 +103,15 @@ def pca_explained_variance_pie(pca, tol=1.0e-3):
     Returns
     -------
     fig : object like :py:class:`matplotlib.figure.Figure`
-        The figure containing the plot.
+        The figure containing the plot, if the figure is created
+        here. Oterwise, it is None.
     axi : object like :py:class:`matplotlib.axes.Axes`
-        The axis containing the plots.
+        The axis containing the plot.
 
     """
-    fig, axi = plt.subplots(nrows=1, ncols=1)
+    fig = None
+    if axi is None:
+        fig, axi = plt.subplots(nrows=1, ncols=1)
     var = list(pca.explained_variance_ratio_)
     missing = 1 - sum(var)
     comp = ['PC{}'.format(i + 1) for i in range(len(var))]
@@ -85,7 +127,6 @@ def pca_explained_variance_pie(pca, tol=1.0e-3):
         textprops={'fontsize': 'x-large'},
     )
     axi.set(aspect='equal')
-    axi.set_title('Explained variance by principal components',
-                  fontsize='xx-large')
-    fig.tight_layout()
+    if fig is not None:
+        fig.tight_layout()
     return fig, axi

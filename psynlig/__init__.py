@@ -11,4 +11,8 @@ from .scatter import (
     generate_scatter,
 )
 from .histogram import histograms
-from .pca import pca_explained_variance, pca_explained_variance_pie
+from .pca import (
+    pca_explained_variance,
+    pca_explained_variance_bar,
+    pca_explained_variance_pie,
+)
