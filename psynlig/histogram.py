@@ -35,7 +35,7 @@ def histograms(data, variables, class_data=None, class_names=None,
     -------
     figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :py:class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """

@@ -25,7 +25,7 @@ def create_scatter_legend(axi, color_labels, class_names, show=False,
 
     Parameters
     ----------
-    axi : object like py:class:`matplotlib.axes.Axes`
+    axi : object like :py:class:`matplotlib.axes.Axes`
         The axes we will add the legend for.
     color_labels : dict of objects like :py:class:`numpy.ndarray`
         Colors for the different classes.
@@ -72,7 +72,7 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
         The column to use as the x-variable.
     yvar : string
         The column to use as the y-variable.
-    axi : object like py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
         An axis to add the plot to. If this is not provided,
         a new axis (and figure) will be created here.
     class_data : object like, optional
@@ -92,7 +92,7 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
     -------
     fig : object like :py:class:`matplotlib.figure.Figure`
         The figure containing the plot.
-    axi : object like py:class:`matplotlib.axes.Axes`
+    axi : object like :py:class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -165,7 +165,7 @@ def generate_scatter(data, variables, class_data=None, class_names=None,
     -------
     figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :py:class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
@@ -220,7 +220,7 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
     -------
     fig : object like :py:class:`matplotlib.figure.Figure`
         The figure containing the plot.
-    axi : object like py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
         The axis containing the plot.
 
     """
@@ -278,7 +278,7 @@ def generate_3d_scatter(data, variables, class_data=None, class_names=None,
     -------
     figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures created here.
-    axes : list of objects like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :py:class:`matplotlib.axes.Axes`
         The axes created here.
 
     """

@@ -18,10 +18,10 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         A list or array of length N with the labels for the rows.
     col_labels : list of strings
         A list or array of length M with the labels for the columns.
-    axi : object like py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
         An axis to plot the heat map.  If not provided, a new axis
         will be created.
-    fig : object like py:class:`matplotlib.figure.Figure`, optional
+    fig : object like :py:class:`matplotlib.figure.Figure`, optional
         The figure where the axes resides in. If given, tight layout
         will be applied.
     cbar_kw : dict, optional
@@ -37,9 +37,9 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         The figure in which the heatmap is plotted.
     axi : object like :py:class:`matplotlib.axes.Axes`
         The axis to which the heatmap is added.
-    img : object like py:class:`matplotlib.image.AxesImage`
+    img : object like :py:class:`matplotlib.image.AxesImage`
         The generated heat map.
-    cbar : object like py:class:`matplotlib.colorbar.Colorbar`
+    cbar : object like :py:class:`matplotlib.colorbar.Colorbar`
         The color bar created for the heat map.
 
     """
@@ -101,7 +101,7 @@ def annotate_heatmap(img, data=None, val_fmt='{x:.2f}', textcolors=None,
 
     Parameters
     ----------
-    img : object like py:class:`matplotlib.image.AxesImage`
+    img : object like :py:class:`matplotlib.image.AxesImage`
         The heat map image to be labeled.
     data : object like :py:class:`numpy.ndarray`, optional
         Data used to annotate the heat map. If not given, the

@@ -52,7 +52,7 @@ def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
     -------
     figures : list of objects like :py:class:`matplotlib.figure.Figure`
         The figures created here.
-    axes : list of objects like py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :py:class:`matplotlib.axes.Axes`
         The axes created here.
 
     """
@@ -94,7 +94,7 @@ def add_xy_line(axi, **kwargs):
 
     Parameters
     ----------
-    axi : object like py:class:`matplotlib.axes.Axes`
+    axi : object like :py:class:`matplotlib.axes.Axes`
         The axis to add the x==y line to.
     **kwargs : dict, optional
         Additional arguments passed to the plotting method.
@@ -116,7 +116,7 @@ def add_trendline(axi, xdata, ydata, **kwargs):
 
     Parameters
     ----------
-    axi : object like py:class:`matplotlib.axes.Axes`
+    axi : object like :py:class:`matplotlib.axes.Axes`
         The axis to add the trendline to.
     xdata : object like :py:class:`pandas.core.series.Series`
         The x-values to add a trendline for.
