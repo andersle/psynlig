@@ -1,8 +1,8 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-Explained variance (pie inset)
-==============================
+Explained variance (joined figure)
+==================================
 
 This example will show the explained variance from a
 `principal component analysis
