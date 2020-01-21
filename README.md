@@ -10,4 +10,4 @@ Please see
 for the latest documentation.
 
 
-![heatmap](examples/heat_correlation/heatmap_example.png)(https://psynlig.readthedocs.io/en/latest/auto_examples/index.html)
+[![heatmap](examples/heat_correlation/heatmap_example.png)](https://psynlig.readthedocs.io/en/latest/auto_examples/index.html)
