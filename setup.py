@@ -10,11 +10,10 @@ import pathlib
 from setuptools import setup, find_packages
 
 
-HERE = pathlib.Path(__file__).parent.resolve()
-
 GITHUB = 'https://github.com/andersle/psynlig'
 DOCS = 'https://psynlig.readthedocs.io/en/latest'
 
+FULL_VERSION = '0.0.5.dev0'  # Automatically set by setup_version.py
 
 def get_long_description():
     """Hard-coded long description."""
@@ -30,20 +29,22 @@ def get_long_description():
 
 
 def get_version():
-    """Read the version from the version.py file."""
-    filename = HERE.joinpath('psynlig', 'version.py')
+    """Return the version from version.py as a string."""
+    here = pathlib.Path(__file__).absolute().parent
+    filename = here.joinpath('psynlig', 'version.py')
     with open(filename, 'r') as fileh:
         for lines in fileh:
             if lines.startswith('FULL_VERSION ='):
                 version = ast.literal_eval(lines.split('=')[1].strip())
                 return version
-    return 'unknown'
+    return FULL_VERSION
 
 
 def get_requirements():
-    """Read requirements from the requirements.txt file."""
+    """Read requirements.txt and return a list of requirements."""
+    here = pathlib.Path(__file__).absolute().parent
     requirements = []
-    filename = HERE.joinpath('requirements.txt')
+    filename = here.joinpath('requirements.txt')
     with open(filename, 'r') as fileh:
         for lines in fileh:
             requirements.append(lines.strip())
