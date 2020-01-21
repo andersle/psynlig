@@ -8,6 +8,20 @@ import numpy as np
 from scipy.stats import pearsonr
 
 
+MARKERS = {
+    0: 'o',
+    1: 's',
+    2: 'X',
+    3: 'D',
+    4: 'v',
+    5: '^',
+    6: '<',
+    7: '>',
+    8: 'P',
+    9: '*',
+}
+
+
 def create_grid(n_plots, ncol):
     """Create a grid for matplotlib given a number of plots and columns.
 
