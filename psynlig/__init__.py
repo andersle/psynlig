@@ -17,4 +17,6 @@ from .pca import (
     pca_explained_variance_pie,
     pca_1d_loadings,
     pca_1d_loadings_component,
+    pca_2d_loadings,
+    pca_2d_loadings_component,
 )

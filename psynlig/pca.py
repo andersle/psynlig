@@ -1,9 +1,11 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """A module defining plots for PCA results."""
+from itertools import combinations
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import numpy as np
+from adjustText import adjust_text
 from .colors import generate_colors
 from .common import MARKERS
 
@@ -177,7 +179,7 @@ def pca_1d_loadings(pca, xvars, select_components=None):
 
 
 def pca_1d_loadings_component(axi, coefficients, xvars, colors):
-    """Plot the loadings for a single component in a 1D plot
+    """Plot the loadings for a single component in a 1D plot.
 
     Parameters
     ----------
@@ -192,17 +194,18 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
 
     """
     pos_b, pos_t = 0, 0
-    for j, coeff in enumerate(coefficients):
+    for i, coeff in enumerate(coefficients):
         # Add marker:
         axi.scatter(
             coeff,
             0,
-            label=xvars[j],
-            marker=MARKERS.get(j, 'o'),
-            color=colors[j],
+            s=200,
+            label=xvars[i],
+            marker=MARKERS.get(i, 'o'),
+            color=colors[i],
             zorder=4,
         )
-        if j % 2 == 0:
+        if i % 2 == 0:
             pos_b += 1
             ypos = -2 - pos_b
             valign = 'top'
@@ -214,8 +217,8 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
         axi.text(
             coeff,
             ypos,
-            xvars[j],
-            color=colors[j],
+            xvars[i],
+            color=colors[i],
             fontsize='large',
             horizontalalignment='center',
             verticalalignment=valign,
@@ -225,7 +228,7 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
         axi.plot(
             [coeff, coeff],
             [0, ypos],
-            color=colors[j],
+            color=colors[i],
             lw=3,
             zorder=0,
         )
@@ -239,3 +242,110 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
     axi.spines['bottom'].set_position('zero')
     axi.set_xticks([-1, -0.5, 0.0, 0.5, 1])
     axi.set_xticklabels([-1, -0.5, 0.0, 0.5, 1])
+
+
+def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False):
+    """Plot the loadings from a PCA in a 2D plot.
+
+    Parameters
+    ----------
+    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    xvars : list of strings
+        Labels for the original variables.
+    select_componets : set of tuples of integers, optional
+        This variable can be used to select the principal components
+        we will create plot for. Note that the principal component
+        numbering will here start from 1 (and not 0). If this is not
+        given, all will be plotted.
+    adjust_labels : boolean, optional
+        If this is True, we will try to optimize the position of the
+        labels so that they wont overlap.
+
+    Returns
+    -------
+    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+        The figures containing the plots.
+    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+        The axes containing the plots.
+
+    """
+    figures = []
+    axes = []
+    components = pca.n_components_
+    colors = generate_colors(len(xvars))
+    for idx1, idx2 in combinations(range(components), 2):
+        if select_components is None:
+            pass
+        else:
+            if (idx1 + 1, idx2 + 1) not in select_components:
+                continue
+        fig, axi = plt.subplots()
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
+        axi.set_ylabel('Principal component {}'.format(idx2 + 1))
+        coefficients1 = np.transpose(pca.components_[idx1, :])
+        coefficients2 = np.transpose(pca.components_[idx2, :])
+        pca_2d_loadings_component(axi, coefficients1, coefficients2,
+                                  xvars, colors, adjust_labels=adjust_labels)
+        fig.tight_layout()
+        figures.append(fig)
+        axes.append(axi)
+    return figures, axes
+
+
+def pca_2d_loadings_component(axi, coefficients1, coefficients2,
+                              xvars, colors, adjust_labels=False):
+    """Plot the loadings for two components in a 2D plot.
+
+    Parameters
+    ----------
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The plot we will add the loadings to.
+    coefficients1 : object like :py:class:`numpy.ndarray`
+        The coefficients for the first principal component.
+    coefficients1 : object like :py:class:`numpy.ndarray`
+        The coefficients for the second principal component.
+    xvars : list of strings
+        Labels for the original variables.
+    colors : list of floats or strings
+        The colors used for the different labels.
+    adjust_labels : boolean, optional
+        If this is True, we will try to optimize the position of the
+        labels so that they wont overlap.
+
+    """
+    texts, points = [], []
+    axi.set_aspect('equal')
+    for i, (coeff1, coeff2) in enumerate(zip(coefficients1, coefficients2)):
+        scat = axi.scatter(
+            coeff1,
+            coeff2,
+            s=200,
+            label=xvars[i],
+            marker=MARKERS.get(i, 'o'),
+            color=colors[i],
+        )
+        points.append(scat)
+        text = axi.text(
+            coeff1,
+            coeff2,
+            xvars[i],
+            color=colors[i],
+            fontsize='large',
+        )
+        texts.append(text)
+    if adjust_labels:
+        adjust_text(
+            texts,
+            add_objects=points,
+            expand_objects=(1.2, 1.2),
+            expand_text=(1.2, 1.2),
+            expand_points=(1.2, 1.2),
+            force_text=(0.25, 0.25),
+            force_points=(0.5, 0.5),
+            force_objects=(0.25, 0.25),
+        )
+    axi.set_xlim(-1, 1)
+    axi.set_ylim(-1, 1)
+    axi.axhline(y=0, ls=':', color='#262626', alpha=0.6)
+    axi.axvline(x=0, ls=':', color='#262626', alpha=0.6)
