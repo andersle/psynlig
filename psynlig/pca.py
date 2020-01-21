@@ -4,6 +4,7 @@
 from itertools import combinations
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
+from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 import numpy as np
 from adjustText import adjust_text
 from .colors import generate_colors
@@ -273,6 +274,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False):
     figures = []
     axes = []
     components = pca.n_components_
+    if components < 2:
+        raise ValueError('Too few (< 2) principal components for a 2D plot!')
     colors = generate_colors(len(xvars))
     for idx1, idx2 in combinations(range(components), 2):
         if select_components is None:
@@ -303,7 +306,7 @@ def pca_2d_loadings_component(axi, coefficients1, coefficients2,
         The plot we will add the loadings to.
     coefficients1 : object like :py:class:`numpy.ndarray`
         The coefficients for the first principal component.
-    coefficients1 : object like :py:class:`numpy.ndarray`
+    coefficients2 : object like :py:class:`numpy.ndarray`
         The coefficients for the second principal component.
     xvars : list of strings
         Labels for the original variables.
@@ -349,3 +352,104 @@ def pca_2d_loadings_component(axi, coefficients1, coefficients2,
     axi.set_ylim(-1, 1)
     axi.axhline(y=0, ls=':', color='#262626', alpha=0.6)
     axi.axvline(x=0, ls=':', color='#262626', alpha=0.6)
+
+
+def pca_3d_loadings(pca, xvars, select_components=None):
+    """Plot the loadings from a PCA in a 3D plot.
+
+    Parameters
+    ----------
+    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    xvars : list of strings
+        Labels for the original variables.
+    select_componets : set of tuples of integers, optional
+        This variable can be used to select the principal components
+        we will create plot for. Note that the principal component
+        numbering will here start from 1 (and not 0). If this is not
+        given, all will be plotted.
+    adjust_labels : boolean, optional
+        If this is True, we will try to optimize the position of the
+        labels so that they wont overlap.
+
+    Returns
+    -------
+    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+        The figures containing the plots.
+    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+        The axes containing the plots.
+
+    """
+    figures = []
+    axes = []
+    components = pca.n_components_
+    if components < 3:
+        raise ValueError('Too few (< 3) principal components for a 3D plot!')
+    colors = generate_colors(len(xvars))
+    for idx1, idx2, idx3 in combinations(range(components), 3):
+        if select_components is None:
+            pass
+        else:
+            if (idx1 + 1, idx2 + 1, idx3 + 1) not in select_components:
+                continue
+        fig = plt.figure()
+        axi = fig.add_subplot(111, projection='3d')
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1), labelpad=15)
+        axi.set_ylabel('Principal component {}'.format(idx2 + 1), labelpad=15)
+        axi.set_zlabel('Principal component {}'.format(idx3 + 1), labelpad=15)
+        coefficients1 = np.transpose(pca.components_[idx1, :])
+        coefficients2 = np.transpose(pca.components_[idx2, :])
+        coefficients3 = np.transpose(pca.components_[idx3, :])
+        pca_3d_loadings_component(axi, coefficients1, coefficients2,
+                                  coefficients3, xvars, colors)
+        fig.tight_layout()
+        figures.append(fig)
+        axes.append(axi)
+    return figures, axes
+
+
+def pca_3d_loadings_component(axi, coefficients1, coefficients2,
+                              coefficients3, xvars, colors):
+    """Plot the loadings for two components in a 2D plot.
+
+    Parameters
+    ----------
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The plot we will add the loadings to.
+    coefficients1 : object like :py:class:`numpy.ndarray`
+        The coefficients for the first principal component.
+    coefficients2 : object like :py:class:`numpy.ndarray`
+        The coefficients for the second principal component.
+    coefficients3 : object like :py:class:`numpy.ndarray`
+        The coefficients for the second principal component.
+    xvars : list of strings
+        Labels for the original variables.
+    colors : list of floats or strings
+        The colors used for the different labels.
+
+    """
+    coeffs = zip(coefficients1, coefficients2, coefficients3)
+    for i, (coeff1, coeff2, coeff3) in enumerate(coeffs):
+        axi.scatter(
+            coeff1,
+            coeff2,
+            coeff3,
+            s=200,
+            label=xvars[i],
+            marker=MARKERS.get(i, 'o'),
+            color=colors[i],
+        )
+        axi.text(
+            coeff1 + 0.02,
+            coeff2 + 0.02,
+            coeff3 + 0.02,
+            xvars[i],
+            color=colors[i],
+            fontsize='x-large',
+        )
+    axi.set_xlim(-1, 1)
+    axi.set_ylim(-1, 1)
+    axi.set_zlim(-1, 1)
+    axi.plot([-1, 1], [0, 0], ls=':', color='#262626', alpha=0.8, lw=3)
+    axi.plot([0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
+    axi.plot([0, 0], [0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
