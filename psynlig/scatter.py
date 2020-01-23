@@ -10,8 +10,6 @@ from .colors import generate_class_colors
 from .common import create_fig_and_axes, add_xy_line, add_trendline
 
 
-_MAX_PLOTS = 5
-_MAX_PLOTS_SCATTER = 4
 _WARNING_MAX_PLOTS = (
     'This will generate {0} plots. If you want to generate '
     'all these plots, rerun the function with the '
@@ -250,7 +248,7 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
 
 
 def generate_3d_scatter(data, variables, class_data=None, class_names=None,
-                        max_plots=_MAX_PLOTS, **kwargs):
+                        max_plots=5, **kwargs):
     """Generate 3D scatter plots from the given data and variables.
 
     This method will generate 3D scatter plots for all combinations
