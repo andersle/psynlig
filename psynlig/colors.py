@@ -43,14 +43,14 @@ def generate_class_colors(class_data):
 
     Parameters
     ----------
-    class_data : object like :py:class:`numpy.ndarray` or None
+    class_data : object like :class:`numpy.ndarray` or None
         The (numeric) labels for the data.
 
     Returns
     -------
-    color_class : list of objects like :py:class:`numpy.ndarray`
+    color_class : list of objects like :class:`numpy.ndarray`
         The colors generated.
-    color_labels : dict of objects like :py:class:`numpy.ndarray`
+    color_labels : dict of objects like :class:`numpy.ndarray`
         Colors for the different classes.
     idx_class : dict of integers
         Indices for data classes.

@@ -17,11 +17,11 @@ def histograms(data, variables, class_data=None, class_names=None,
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting.
     variables : list of strings
         The variables we are going to plot for.
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings
         A mapping from the class data to labels/names.
@@ -39,9 +39,9 @@ def histograms(data, variables, class_data=None, class_names=None,
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
@@ -78,13 +78,13 @@ def histogram1d(axi, data, variable, class_data=None, class_names=None,
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis we will add the histogram to.
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting.
     variable : list of strings
         The variable we are going to plot for.
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings
         A mapping from the class data to labels/names.
@@ -111,7 +111,7 @@ def _histogram2d_style(axi, *spines, xlim=None, ylim=None):
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis we will style.
     spines : list of strings
         The spines we will hide.
@@ -138,9 +138,9 @@ def _histogram2d_contour(axi, data, xvar, yvar, show_contour,
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis we will add the plot to.
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting, here it is assume that we
         can select the values given by ``xvar`` and ``yvar``.
     xvar : string
@@ -151,11 +151,11 @@ def _histogram2d_contour(axi, data, xvar, yvar, show_contour,
         The type of contour plot we will make. A value
         of ``filled`` will give a filled contour, anything else
         gives just the lines.
-    counts : object like :py:class:`numpy.ndarray` or None
+    counts : object like :class:`numpy.ndarray` or None
         The data points we will use to create the contour plot from.
-    xedges : object like :py:class:`numpy.ndarray` or None
+    xedges : object like :class:`numpy.ndarray` or None
         X-values for the binning used to obtain ``counts``
-    yedges : object like :py:class:`numpy.ndarray` or None
+    yedges : object like :class:`numpy.ndarray` or None
         Y-values for the binning used to obtain ``counts``
     kwargs : dict, optional
         Additional settings for the contour plot.
@@ -190,14 +190,14 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting, here it is assume that we
         can select the values given by ``xvar`` and ``yvar``.
     xdata : string
         The variable to use as the x-variable.
     ydata : string
         The variable to use as the y-variable.
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings
         A mapping from the class data to labels/names.

@@ -23,9 +23,9 @@ def create_scatter_legend(axi, color_labels, class_names, show=False,
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axes we will add the legend for.
-    color_labels : dict of objects like :py:class:`numpy.ndarray`
+    color_labels : dict of objects like :class:`numpy.ndarray`
         Colors for the different classes.
     color_names : dict of strings
         Names for the classes.
@@ -37,7 +37,7 @@ def create_scatter_legend(axi, color_labels, class_names, show=False,
 
     Returns
     -------
-    patches : list of objects like :py:class:`matplotlib.artist.Artist`
+    patches : list of objects like :class:`matplotlib.artist.Artist`
         The items we will create a legend for.
     labels : list of strings
         The labels for the legend.
@@ -64,16 +64,16 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting.
     xvar : string
         The column to use as the x-variable.
     yvar : string
         The column to use as the y-variable.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         An axis to add the plot to. If this is not provided,
         a new axis (and figure) will be created here.
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings
         A mapping from the class data to labels/names.
@@ -88,9 +88,9 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None, class_names=None,
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot.
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -140,11 +140,11 @@ def generate_scatter(data, variables, class_data=None, class_names=None,
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we will plot here.
     variables : list of strings
         The variables we will generate scatter plots for.
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
@@ -161,9 +161,9 @@ def generate_scatter(data, variables, class_data=None, class_names=None,
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
@@ -199,7 +199,7 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting.
     xvar : string
         The column to use as the x-variable.
@@ -207,7 +207,7 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
         The column to use as the y-variable.
     zvar : string
         The column to use as the z-variable
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
@@ -216,9 +216,9 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         The axis containing the plot.
 
     """
@@ -259,11 +259,11 @@ def generate_3d_scatter(data, variables, class_data=None, class_names=None,
 
     Parameters
     ----------
-    data : object like :py:class:`pandas.core.frame.DataFrame`
+    data : object like :class:`pandas.core.frame.DataFrame`
         The data we will plot here.
     variables : list of strings
         The variables we will generate scatter plots for.
-    class_data : object like, optional
+    class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
@@ -274,9 +274,9 @@ def generate_3d_scatter(data, variables, class_data=None, class_names=None,
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures created here.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes created here.
 
     """

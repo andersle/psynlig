@@ -35,7 +35,7 @@ def create_grid(n_plots, ncol):
 
     Returns
     -------
-    grid : object like :py:class:`matplotlib.gridspec.GridSpec`
+    grid : object like :class:`matplotlib.gridspec.GridSpec`
         The grid we will create axes in.
 
     """
@@ -65,9 +65,9 @@ def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures created here.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes created here.
 
     """
@@ -109,14 +109,14 @@ def add_xy_line(axi, **kwargs):
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis to add the x==y line to.
     **kwargs : dict, optional
         Additional arguments passed to the plotting method.
 
     Returns
     -------
-    line : object like :py:class:`matplotlib.lines.Line2D`
+    line : object like :class:`matplotlib.lines.Line2D`
         The created line.
 
     """
@@ -131,18 +131,18 @@ def add_trendline(axi, xdata, ydata, **kwargs):
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis to add the trendline to.
-    xdata : object like :py:class:`pandas.core.series.Series`
+    xdata : object like :class:`pandas.core.series.Series`
         The x-values to add a trendline for.
-    ydata : object like :py:class:`pandas.core.series.Series`
+    ydata : object like :class:`pandas.core.series.Series`
         The y-values to add a trendline for.
     **kwargs : dict, optional
         Additional arguments passed to the plotting method.
 
     Returns
     -------
-    line : object like :py:class:`matplotlib.lines.Line2D`
+    line : object like :class:`matplotlib.lines.Line2D`
         The created line.
 
     """
@@ -188,7 +188,7 @@ def set_origin_axes(axi, xlabel, ylabel, **kwargs):
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis to modify.
     xlabel : string
         The label to use for the x-axis.
