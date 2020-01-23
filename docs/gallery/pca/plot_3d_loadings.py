@@ -4,7 +4,7 @@
 PCA Loadings (3D)
 =================
 
-This example will plot the loadings along three principal axes.
+This example will plot PCA loadings along three principal axes.
 """
 from matplotlib import pyplot as plt
 import pandas as pd

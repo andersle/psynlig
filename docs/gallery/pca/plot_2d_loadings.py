@@ -4,7 +4,7 @@
 PCA Loadings (2D)
 =================
 
-This example will plot the loadings along two principal axes.
+This example will plot PCA loadings along two principal axes.
 """
 from matplotlib import pyplot as plt
 import pandas as pd
