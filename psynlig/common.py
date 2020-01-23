@@ -1,6 +1,7 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """A module defining common methods."""
+import copy
 from math import ceil
 from matplotlib import pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -180,3 +181,41 @@ def get_rsquared(yval, yre):
     ss_res = np.sum((yval - yre)**2)
     rsq = 1.0 - (ss_res / ss_tot)
     return rsq
+
+
+def set_origin_axes(axi, xlabel, ylabel, **kwargs):
+    """Move the x/y-axes of a plot to the origin.
+
+    Parameters
+    ----------
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The axis to modify.
+    xlabel : string
+        The label to use for the x-axis.
+    ylabel : string
+        The label to use for the y-axis.
+    kwargs : dict, optional
+        Additional font settings for the axis labels.
+
+    """
+    font_dict_x = copy.deepcopy(kwargs)
+    font_dict_x.update(
+        {
+            'verticalalignment': 'center',
+            'horizontalalignment': 'left',
+        }
+    )
+    font_dict_y = copy.deepcopy(kwargs)
+    font_dict_y.update(
+        {
+            'horizontalalignment': 'center',
+            'verticalalignment': 'bottom',
+        }
+    )
+    axi.spines['left'].set_position('zero')
+    axi.spines['right'].set_visible(False)
+    axi.spines['bottom'].set_position('zero')
+    axi.spines['top'].set_visible(False)
+    axi.set(xlabel=None, ylabel=None)
+    axi.text(1.1, 0.0, xlabel, **font_dict_x)
+    axi.text(0.0, 1.1, ylabel, **font_dict_y)

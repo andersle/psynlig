@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 import numpy as np
 from adjustText import adjust_text
 from .colors import generate_colors, generate_class_colors
-from .common import MARKERS
+from .common import MARKERS, set_origin_axes
 from .scatter import create_scatter_legend
 
 
@@ -304,15 +304,12 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
             axi.axhline(y=0, ls=':', color='#262626', alpha=0.6)
             axi.axvline(x=0, ls=':', color='#262626', alpha=0.6)
         elif style == 'center':
-            axi.spines['left'].set_position('zero')
-            axi.spines['right'].set_visible(False)
-            axi.spines['bottom'].set_position('zero')
-            axi.spines['top'].set_visible(False)
-            axi.set(xlabel=None, ylabel=None)
-            axi.text(1.1, 0.0, 'PC{}'.format(idx1 + 1),
-                     fontsize='x-large', verticalalignment='center')
-            axi.text(0.0, 1.1, 'PC{}'.format(idx2 + 1),
-                     fontsize='x-large', horizontalalignment='center')
+            set_origin_axes(
+                axi,
+                'PC{}'.format(idx1 + 1),
+                'PC{}'.format(idx2 + 1),
+                fontsize='x-large',
+            )
             axi.set_xticks([-1, -0.5, 0.5, 1])
             axi.set_yticks([-1, -0.5, 0.5, 1])
         else:
@@ -481,7 +478,9 @@ def pca_3d_loadings_component(axi, coefficients1, coefficients2,
     axi.plot([0, 0], [0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
 
 
-def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None, select_components=None, **kwargs):
+def pca_2d_scores(pca, scores, xvars,
+                  class_data=None, class_names=None,
+                  select_components=None, **kwargs):
     """Plot scores from a PCA model."""
     components = pca.n_components_
     if components < 2:
@@ -516,7 +515,9 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None, select_
         fig.tight_layout()
 
 
-def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None, select_components=None, **kwargs):
+def pca_1d_scores(pca, scores, xvars,
+                  class_data=None, class_names=None,
+                  select_components=None, **kwargs):
     """Plot scores from a PCA model."""
     components = pca.n_components_
     color_class, color_labels, idx_class = generate_class_colors(class_data)
