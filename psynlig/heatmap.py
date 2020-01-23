@@ -121,8 +121,13 @@ def annotate_heatmap(img, data=None, val_fmt='{x:.2f}', textcolors=None,
         data = img.get_array()
 
     # Create arguments for text:
-    textkw = {'horizontalalignment': 'center', 'verticalalignment': 'center'}
-    textkw.update(kwargs)
+    textkw = kwargs.copy()
+    textkw.update(
+        {
+            'horizontalalignment': 'center',
+            'verticalalignment': 'center',
+        }
+    )
 
     # Get the formatter:
     formatter = StrMethodFormatter(val_fmt)
@@ -176,13 +181,14 @@ def plot_heatmap(data, val_fmt='{x:.2f}', textcolors=None, **kwargs):
         data.columns,
         axi=ax1,
         cbarlabel='Pearson correlation coefficient',
-        **kwargs,
+        **kwargs.get('heatmap', {}),
     )
     annotate_heatmap(
         img,
         val_fmt=val_fmt,
         textcolors=textcolors,
-        fontsize='large'
+        **kwargs.get('text', {}),
     )
+    ax1.grid(False)
     fig1.tight_layout()
     return fig1, ax1

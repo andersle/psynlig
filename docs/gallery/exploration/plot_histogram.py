@@ -34,6 +34,6 @@ variables = ['sepal length (cm)', 'sepal width (cm)',
 
 histograms(data, variables, class_names=class_names,
            class_data=class_data, ncol=2, max_plots=4,
-           edgecolor='black', alpha=0.8, bins=10)
+           edgecolor='black', alpha=0.8, bins=10, density=True)
 
 plt.show()

@@ -93,7 +93,7 @@ def histogram1d(axi, data, variable, class_data=None, class_names=None,
 
     """
     color_class, _, idx_class = generate_class_colors(class_data)
-    axi.set(xlabel=variable, ylabel='Frequency')
+    axi.set(xlabel=variable, ylabel=None)
     if class_data is None:
         axi.hist(data[variable], **kwargs)
     else:
@@ -102,7 +102,6 @@ def histogram1d(axi, data, variable, class_data=None, class_names=None,
                 data[variable][idx],
                 color=color_class[class_id],
                 label=class_names[class_id],
-                density=False,
                 **kwargs
             )
 
@@ -168,6 +167,9 @@ def _histogram2d_contour(axi, data, xvar, yvar, show_contour,
             data[yvar],
             bins=kwargs.get('histogram2d', {}).get(
                 'bins', rcParams['hist.bins']
+            ),
+            density=kwargs.get('histogram2d', {}).get(
+                'density', False
             ),
         )
     xmid = 0.5 * (xedges[1:] + xedges[:-1])

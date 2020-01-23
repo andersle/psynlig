@@ -86,6 +86,43 @@ def pca_residual_variance(pca, axi=None, **kwargs):
     return fig, axi
 
 
+def pca_scree(pca, axi=None, **kwargs):
+    """Plot the eigenvalues as function of PCA components.
+
+    Parameters
+    ----------
+    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+        If given, the plot will be added to the specified axis.
+        Otherwise, a new axis (and figure) will be created here.
+    kwargs : dict
+        Additional settings for the plotting.
+
+    Returns
+    -------
+    fig : object like :py:class:`matplotlib.figure.Figure`
+        The figure containing the plot, if the figure is created
+        here. Oterwise, it is None.
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The axis containing the plot.
+
+    """
+    fig = None
+    if axi is None:
+        fig, axi = plt.subplots(nrows=1, ncols=1)
+    eigenvalues = pca.explained_variance_
+    comp = range(1, len(eigenvalues) + 1)
+    axi.plot(comp, eigenvalues, **kwargs)
+    axi.set(xlabel='Principal component',
+            ylabel='Eigenvalue')
+    axi.xaxis.set_major_locator(MaxNLocator(integer=True))
+    axi.set_xlim(min(comp) - 0.25, max(comp) + 0.25)
+    if fig is not None:
+        fig.tight_layout()
+    return fig, axi
+
+
 def pca_explained_variance_bar(pca, axi=None, **kwargs):
     """Plot the explained variance per principal component.
 

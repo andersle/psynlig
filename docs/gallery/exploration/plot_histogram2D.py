@@ -22,11 +22,13 @@ kwargs = {
     'histogram2d': {
         'alpha': 0.3,
         'bins': 20,
+        'density': True
     },
     'histogram1d': {
         'alpha': 0.8,
         'edgecolor': 'black',
         'bins': 30,
+        'density': True
     },
     'scatter': {
         's': 50,
