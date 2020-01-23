@@ -23,6 +23,15 @@ data = scale(data)
 pca = PCA()
 scores = pca.fit_transform(data)
 
-pca_2d_scores(pca, scores, None, class_data=class_data, class_names=class_names, select_components={(1, 2), (1, 3), (2, 3)}, s=200, alpha=.8)
+pca_2d_scores(
+    pca,
+    scores,
+    None,
+    class_data=class_data,
+    class_names=class_names,
+    select_components={(1, 2), (1, 3), (2, 3)},
+    s=200,
+    alpha=.8
+)
 
 plt.show()

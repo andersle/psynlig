@@ -23,6 +23,15 @@ data = scale(data)
 pca = PCA()
 reduced_features = pca.fit_transform(data)
 
-pca_1d_scores(pca, reduced_features, None, class_data=class_data, class_names=class_names, select_components={1, 2}, s=200, alpha=.8)
+pca_1d_scores(
+    pca,
+    reduced_features,
+    None,
+    class_data=class_data,
+    class_names=class_names,
+    select_components={1, 2},
+    s=200,
+    alpha=.8
+)
 
 plt.show()
