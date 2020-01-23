@@ -8,8 +8,7 @@ This example will show the explained variance from a
 `principal component analysis
 <https://en.wikipedia.org/wiki/Principal_component_analysis>`_
 as a function of the number of principal components considered.
-Here we join all three plots of the explained variance into one
-figure.
+Here we join four different plots together.
 """
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
@@ -19,6 +18,7 @@ from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
 from psynlig import (
     pca_explained_variance,
+    pca_residual_variance,
     pca_explained_variance_bar,
     pca_explained_variance_pie
 )
@@ -35,6 +35,9 @@ pca.fit_transform(data)
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
 pca_explained_variance_bar(pca, axi=ax1, alpha=0.8)
 pca_explained_variance(pca, axi=ax2, marker='o', markersize=16, alpha=0.8)
+ax4 = ax2.twinx()
+pca_residual_variance(pca, ax4, marker='X', markersize=16, alpha=0.8,
+                      color='black', linestyle='--')
 fig.tight_layout()
 ax3 = inset_axes(ax1, width='45%', height='45%', loc=9)
 pca_explained_variance_pie(pca, axi=ax3)

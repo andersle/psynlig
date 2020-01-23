@@ -41,7 +41,45 @@ def pca_explained_variance(pca, axi=None, **kwargs):
     comp = range(0, len(var))
     axi.plot(comp, var, **kwargs)
     axi.axhline(y=1, color='black', ls=':')
-    axi.set(xlabel='Number of components', ylabel='Explained variance')
+    axi.set(xlabel='Number of components',
+            ylabel='Explained variance (fraction)')
+    axi.xaxis.set_major_locator(MaxNLocator(integer=True))
+    if fig is not None:
+        fig.tight_layout()
+    return fig, axi
+
+
+def pca_residual_variance(pca, axi=None, **kwargs):
+    """Plot the residual variance as function of PCA components.
+
+    Parameters
+    ----------
+    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+        If given, the plot will be added to the specified axis.
+        Otherwise, a new axis (and figure) will be created here.
+    kwargs : dict
+        Additional settings for plotting explained variance.
+
+    Returns
+    -------
+    fig : object like :py:class:`matplotlib.figure.Figure`
+        The figure containing the plot, if the figure is created
+        here. Oterwise, it is None.
+    axi : object like :py:class:`matplotlib.axes.Axes`
+        The axis containing the plot.
+
+    """
+    fig = None
+    if axi is None:
+        fig, axi = plt.subplots(nrows=1, ncols=1)
+    var = 1 - np.array([0] + list(np.cumsum(pca.explained_variance_ratio_)))
+    comp = range(0, len(var))
+    axi.axhline(y=0, color='black', ls=':')
+    axi.plot(comp, var, **kwargs)
+    axi.set(xlabel='Number of components',
+            ylabel='Residual variance (fraction)')
     axi.xaxis.set_major_locator(MaxNLocator(integer=True))
     if fig is not None:
         fig.tight_layout()
@@ -84,7 +122,7 @@ def pca_explained_variance_bar(pca, axi=None, **kwargs):
     )
     axi.set(
         xlabel='Principal component',
-        ylabel='Explained variance per component',
+        ylabel='Explained variance (fraction) per component',
     )
     if fig is not None:
         fig.tight_layout()
