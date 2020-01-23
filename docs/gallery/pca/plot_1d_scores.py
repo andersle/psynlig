@@ -1,10 +1,10 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-PCA Scores (2D)
+PCA Scores (1D)
 ===============
 
-This example will plot PCA scores along two principal axes.
+This example will plot PCA scores along one principal axis.
 """
 from matplotlib import pyplot as plt
 import pandas as pd

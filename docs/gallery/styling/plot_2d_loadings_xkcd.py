@@ -1,8 +1,8 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-PCA Loadings (2D) with xkcd style
-=================================
+PCA Loadings (2D) with xkcd style and centered axes
+===================================================
 
 This example will plot PCA loadings along two principal axes.
 Here we employ the xkcd style and also modify the loadings
