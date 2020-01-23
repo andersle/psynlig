@@ -21,4 +21,6 @@ from .pca import (
     pca_2d_loadings_component,
     pca_3d_loadings,
     pca_3d_loadings_component,
+    pca_2d_scores,
+    pca_1d_scores,
 )
