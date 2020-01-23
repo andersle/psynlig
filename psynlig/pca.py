@@ -7,8 +7,9 @@ from matplotlib.ticker import MaxNLocator
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 import numpy as np
 from adjustText import adjust_text
-from .colors import generate_colors
+from .colors import generate_colors, generate_class_colors
 from .common import MARKERS
+from .scatter import create_scatter_legend
 
 
 def pca_explained_variance(pca, axi=None, **kwargs):
@@ -245,7 +246,8 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
     axi.set_xticklabels([-1, -0.5, 0.0, 0.5, 1])
 
 
-def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False):
+def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
+                    style='box'):
     """Plot the loadings from a PCA in a 2D plot.
 
     Parameters
@@ -262,6 +264,12 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False):
     adjust_labels : boolean, optional
         If this is True, we will try to optimize the position of the
         labels so that they wont overlap.
+    style : string, optional
+        This option changes the styling of the plot.
+        For style ``box``, we show the axes as a normal matplotlib
+        figure with inserted lines showing x=0 and y=0.
+        For the style 'center' we place the x-axis and y-axis at
+        the origin.
 
     Returns
     -------
@@ -284,12 +292,32 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False):
             if (idx1 + 1, idx2 + 1) not in select_components:
                 continue
         fig, axi = plt.subplots()
-        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
-        axi.set_ylabel('Principal component {}'.format(idx2 + 1))
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
         pca_2d_loadings_component(axi, coefficients1, coefficients2,
                                   xvars, colors, adjust_labels=adjust_labels)
+        axi.set(
+            xlabel='Principal component {}'.format(idx1 + 1),
+            ylabel='Principal component {}'.format(idx2 + 1),
+        )
+        if style == 'box':
+            axi.axhline(y=0, ls=':', color='#262626', alpha=0.6)
+            axi.axvline(x=0, ls=':', color='#262626', alpha=0.6)
+        elif style == 'center':
+            axi.spines['left'].set_position('zero')
+            axi.spines['right'].set_visible(False)
+            axi.spines['bottom'].set_position('zero')
+            axi.spines['top'].set_visible(False)
+            axi.set(xlabel=None, ylabel=None)
+            axi.text(1.1, 0.0, 'PC{}'.format(idx1 + 1),
+                     fontsize='x-large', verticalalignment='center')
+            axi.text(0.0, 1.1, 'PC{}'.format(idx2 + 1),
+                     fontsize='x-large', horizontalalignment='center')
+            axi.set_xticks([-1, -0.5, 0.5, 1])
+            axi.set_yticks([-1, -0.5, 0.5, 1])
+        else:
+            # Do not do any styling.
+            pass
         fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
@@ -350,8 +378,6 @@ def pca_2d_loadings_component(axi, coefficients1, coefficients2,
         )
     axi.set_xlim(-1, 1)
     axi.set_ylim(-1, 1)
-    axi.axhline(y=0, ls=':', color='#262626', alpha=0.6)
-    axi.axvline(x=0, ls=':', color='#262626', alpha=0.6)
 
 
 def pca_3d_loadings(pca, xvars, select_components=None):
@@ -453,3 +479,74 @@ def pca_3d_loadings_component(axi, coefficients1, coefficients2,
     axi.plot([-1, 1], [0, 0], ls=':', color='#262626', alpha=0.8, lw=3)
     axi.plot([0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
     axi.plot([0, 0], [0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
+
+
+def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None, select_components=None, **kwargs):
+    """Plot scores from a PCA model."""
+    components = pca.n_components_
+    if components < 2:
+        raise ValueError('Too few (< 2) principal components for a 2D plot!')
+    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    for idx1, idx2 in combinations(range(components), 2):
+        if select_components is None:
+            pass
+        else:
+            if (idx1 + 1, idx2 + 1) not in select_components:
+                continue
+        fig, axi = plt.subplots()
+        if class_data is None:
+            axi.scatter(
+                scores[:, idx1],
+                scores[:, idx2],
+                **kwargs
+            )
+        else:
+            for classid, idx in idx_class.items():
+                axi.scatter(
+                    scores[idx, idx1],
+                    scores[idx, idx2],
+                    color=color_class[classid],
+                    **kwargs
+                )
+            patches, labels = create_scatter_legend(
+                axi, color_labels, class_names, show=True, **kwargs
+            )
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
+        axi.set_ylabel('Principal component {}'.format(idx2 + 1))
+        fig.tight_layout()
+
+
+def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None, select_components=None, **kwargs):
+    """Plot scores from a PCA model."""
+    components = pca.n_components_
+    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    for idx1 in range(components):
+        if select_components is None:
+            pass
+        else:
+            if (idx1 + 1) not in select_components:
+                continue
+        fig, axi = plt.subplots()
+        if class_data is None:
+            axi.scatter(
+                scores[:, idx1],
+                np.zeros_like(scores[:, idx1]),
+                **kwargs
+            )
+        else:
+            for classid, idx in idx_class.items():
+                axi.scatter(
+                    scores[idx, idx1],
+                    np.zeros_like(scores[idx, idx1]),
+                    color=color_class[classid],
+                    **kwargs
+                )
+            patches, labels = create_scatter_legend(
+                axi, color_labels, class_names, show=True, **kwargs
+            )
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
+        for loc in ('left', 'right', 'top'):
+            axi.spines[loc].set_visible(False)
+        axi.get_yaxis().set_visible(False)
+        axi.spines['bottom'].set_position('zero')
+        fig.tight_layout()
