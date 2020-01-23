@@ -10,7 +10,7 @@ from .scatter import (
     plot_scatter,
     generate_scatter,
 )
-from .histogram import histograms
+from .histogram import histograms, histogram2d
 from .pca import (
     pca_explained_variance,
     pca_explained_variance_bar,
