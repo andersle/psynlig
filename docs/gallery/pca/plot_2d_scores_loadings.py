@@ -1,10 +1,11 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-PCA Scores (2D)
-===============
+PCA Scores (2D) with loadings
+=============================
 
-This example will plot PCA scores along two principal axes.
+This example will plot PCA scores along two principal axes and
+also show the loadings
 """
 from matplotlib import pyplot as plt
 import pandas as pd
@@ -36,13 +37,20 @@ data = scale(data)
 pca = PCA()
 scores = pca.fit_transform(data)
 
+loading_settings = {
+    'adjust_text': False,
+    'add_text': True,
+    'jiggle_text': True,
+}
+
 pca_2d_scores(
     pca,
     scores,
-    None,
+    xvars,
     class_data=class_data,
     class_names=class_names,
-    select_components={(1, 2), (1, 3), (2, 3)},
+    select_components={(1, 2),},
+    loading_settings=loading_settings,
     s=200,
     alpha=.8
 )

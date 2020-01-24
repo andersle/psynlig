@@ -4,8 +4,11 @@
 from itertools import combinations
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
+from matplotlib.legend import Legend
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 import numpy as np
+from numpy.linalg import norm
+from shapely.geometry import Polygon
 from adjustText import adjust_text
 from .colors import generate_colors, generate_class_colors
 from .common import MARKERS, set_origin_axes
@@ -17,9 +20,9 @@ def pca_explained_variance(pca, axi=None, **kwargs):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
     kwargs : dict
@@ -27,10 +30,10 @@ def pca_explained_variance(pca, axi=None, **kwargs):
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot, if the figure is created
         here. Oterwise, it is None.
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -54,9 +57,9 @@ def pca_residual_variance(pca, axi=None, **kwargs):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
     kwargs : dict
@@ -64,10 +67,10 @@ def pca_residual_variance(pca, axi=None, **kwargs):
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot, if the figure is created
         here. Oterwise, it is None.
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -91,9 +94,9 @@ def pca_scree(pca, axi=None, **kwargs):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
     kwargs : dict
@@ -101,10 +104,10 @@ def pca_scree(pca, axi=None, **kwargs):
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot, if the figure is created
         here. Oterwise, it is None.
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -128,9 +131,9 @@ def pca_explained_variance_bar(pca, axi=None, **kwargs):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
     kwargs : dict
@@ -138,10 +141,10 @@ def pca_explained_variance_bar(pca, axi=None, **kwargs):
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot, if the figure is created
         here. Oterwise, it is None.
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -171,9 +174,9 @@ def pca_explained_variance_pie(pca, axi=None, tol=1.0e-3):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
-    axi : object like :py:class:`matplotlib.axes.Axes`, optional
+    axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
     tol : float, optional
@@ -182,10 +185,10 @@ def pca_explained_variance_pie(pca, axi=None, tol=1.0e-3):
 
     Returns
     -------
-    fig : object like :py:class:`matplotlib.figure.Figure`
+    fig : object like :class:`matplotlib.figure.Figure`
         The figure containing the plot, if the figure is created
         here. Oterwise, it is None.
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The axis containing the plot.
 
     """
@@ -217,7 +220,7 @@ def pca_1d_loadings(pca, xvars, select_components=None):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
     xvars : list of strings
         Labels for the original variables.
@@ -229,9 +232,9 @@ def pca_1d_loadings(pca, xvars, select_components=None):
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
@@ -260,9 +263,9 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The plot we will add the loadings to.
-    coefficients : object like :py:class:`numpy.ndarray`
+    coefficients : object like :class:`numpy.ndarray`
         The coefficients we are to show.
     xvars : list of strings
         Labels for the original variables.
@@ -327,7 +330,7 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
     xvars : list of strings
         Labels for the original variables.
@@ -348,9 +351,9 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
@@ -402,11 +405,11 @@ def pca_2d_loadings_component(axi, coefficients1, coefficients2,
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The plot we will add the loadings to.
-    coefficients1 : object like :py:class:`numpy.ndarray`
+    coefficients1 : object like :class:`numpy.ndarray`
         The coefficients for the first principal component.
-    coefficients2 : object like :py:class:`numpy.ndarray`
+    coefficients2 : object like :class:`numpy.ndarray`
         The coefficients for the second principal component.
     xvars : list of strings
         Labels for the original variables.
@@ -457,7 +460,7 @@ def pca_3d_loadings(pca, xvars, select_components=None):
 
     Parameters
     ----------
-    pca : object like :py:class:`sklearn.decomposition._pca.PCA`
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
         The results from a PCA analysis.
     xvars : list of strings
         Labels for the original variables.
@@ -466,15 +469,12 @@ def pca_3d_loadings(pca, xvars, select_components=None):
         we will create plot for. Note that the principal component
         numbering will here start from 1 (and not 0). If this is not
         given, all will be plotted.
-    adjust_labels : boolean, optional
-        If this is True, we will try to optimize the position of the
-        labels so that they wont overlap.
 
     Returns
     -------
-    figures : list of objects like :py:class:`matplotlib.figure.Figure`
+    figures : list of objects like :class:`matplotlib.figure.Figure`
         The figures containing the plots.
-    axes : list of objects like :py:class:`matplotlib.axes.Axes`
+    axes : list of objects like :class:`matplotlib.axes.Axes`
         The axes containing the plots.
 
     """
@@ -512,13 +512,13 @@ def pca_3d_loadings_component(axi, coefficients1, coefficients2,
 
     Parameters
     ----------
-    axi : object like :py:class:`matplotlib.axes.Axes`
+    axi : object like :class:`matplotlib.axes.Axes`
         The plot we will add the loadings to.
-    coefficients1 : object like :py:class:`numpy.ndarray`
+    coefficients1 : object like :class:`numpy.ndarray`
         The coefficients for the first principal component.
-    coefficients2 : object like :py:class:`numpy.ndarray`
+    coefficients2 : object like :class:`numpy.ndarray`
         The coefficients for the second principal component.
-    coefficients3 : object like :py:class:`numpy.ndarray`
+    coefficients3 : object like :class:`numpy.ndarray`
         The coefficients for the second principal component.
     xvars : list of strings
         Labels for the original variables.
@@ -553,10 +553,264 @@ def pca_3d_loadings_component(axi, coefficients1, coefficients2,
     axi.plot([0, 0], [0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
 
 
-def pca_2d_scores(pca, scores, xvars,
-                  class_data=None, class_names=None,
-                  select_components=None, **kwargs):
-    """Plot scores from a PCA model."""
+def _find_intersect(axi, xcoeff, ycoeff):
+    """Find intersection between a line and the bounds of the axis.
+
+    Parameters
+    ----------
+    axi : object like :class:`matplotlib.axes.Axes`
+        The plot to add the loadings to.
+    xcoeff : float
+        The x-value for the line we are to extend.
+    ycoeff : float
+        The y-value for the line we are to extend.
+
+    Return
+    ------
+    xend : float
+        The x ending point for the extended line.
+    yend : float
+        The y ending point for the extended line.
+
+    """
+    xmin, xmax = min(axi.get_xlim()), max(axi.get_xlim())
+    ymin, ymax = min(axi.get_ylim()), max(axi.get_ylim())
+    xend, yend = None, None
+
+    def direction(xhat, yhat):
+        return np.sign(xcoeff * xhat + ycoeff * yhat) > 0
+
+    if xcoeff == 0 and ycoeff == 0:
+        # Can not extend it...
+        pass
+    else:
+        if xcoeff == 0:
+            xend = 0
+            yend = ymax if ycoeff > 0 else ymin
+        elif ycoeff == 0:
+            xend = xmax if xcoeff > 0 else xmin
+            yend = 0
+        else:
+            # Line 1)
+            yhat = ycoeff * xmin / xcoeff
+            if ymin <= yhat <= ymax and direction(xmin, yhat):
+                xend = xmin
+                yend = yhat
+            # Line 2)
+            xhat = xcoeff * ymin / ycoeff
+            if xmin <= xhat <= xmax and direction(xhat, ymin):
+                xend = xhat
+                yend = ymin
+            # Line 3)
+            yhat = ycoeff * xmax / xcoeff
+            if ymin <= yhat <= ymax and direction(xmax, yhat):
+                xend = xmax
+                yend = yhat
+            # Line 4)
+            xhat = xcoeff * ymax / ycoeff
+            if xmin <= xhat <= xmax and direction(xhat, ymax):
+                xend = xhat
+                yend = ymax
+    return xend, yend
+
+
+def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
+                           settings=None):
+    """Add a loading line to a plot."""
+    text = None
+    scat = None
+    # First plot the "real" length:
+    line, = axi.plot(
+        [0, xcoeff],
+        [0, ycoeff],
+        color='black',
+        alpha=0.8
+    )
+    # Then extend the line so that the length is the given length:
+    xlim, ylim = axi.get_xlim(), axi.get_ylim()
+    xend, yend = _find_intersect(axi, xcoeff, ycoeff)
+    if xend is None or yend is None:
+        xend, yend = xcoeff, ycoeff
+    axi.plot(
+        [0, xend],
+        [0, yend],
+        ls=':',
+        color=line.get_color(),
+        alpha=line.get_alpha()
+    )
+    # Check if we should add text:
+    if settings is not None and settings.get('add_text', False):
+        text = axi.text(
+            xend,
+            yend,
+            label,
+            weight='bold',
+            horizontalalignment='left',
+            verticalalignment='center',
+            color=color,
+            fontsize='large',
+        )
+    if settings is not None and settings.get('add_legend', False):
+        scat = axi.scatter(
+            xend * 0.99,
+            yend * 0.99,
+            color=color,
+            marker='X',
+            label=label,
+            s=200
+        )
+    axi.set_xlim(xlim)
+    axi.set_ylim(ylim)
+    return text, scat
+
+
+def jiggle_text(axi, texts, maxiter=1000):
+    """Attempt to jiggle text around so that they do not overlap.
+
+    Parameters
+    ----------
+    axi : object like :class:`matplotlib.axes.Axes`
+        The axis the text boxes reside in.
+    texts : list of objects like :class:`matplotlib.text.Text`
+        The text boxes we attempt to jiggle around.
+    maxiter : integer, optional
+        The maximum number of attempts we make to jiggle the
+        text around.
+
+    """
+    renderer = axi.figure.canvas.get_renderer()
+    transform_data = axi.transData.inverted()
+    jiggle_x = (max(axi.get_xlim()) - min(axi.get_xlim())) * 0.01
+    jiggle_y = (max(axi.get_ylim()) - min(axi.get_ylim())) * 0.01
+    for i in range(maxiter):
+        boxes = []
+        for txt in texts:
+            box = txt.get_window_extent(renderer=renderer)
+            box_data = box.transformed(transform_data)
+            polygon = Polygon(
+                [
+                    (box_data.x0, box_data.y0),
+                    (box_data.x0, box_data.y1),
+                    (box_data.x1, box_data.y1),
+                    (box_data.x1, box_data.y0),
+                ]
+            )
+            boxes.append(polygon)
+        # Check all pairs to see who overlap:
+        no_overlap = True
+        axi.figure.savefig('text-{:05d}.png'.format(i))
+        for idx1, idx2 in combinations(range(len(boxes)), 2):
+            box1 = boxes[idx1]
+            box2 = boxes[idx2]
+            text1 = texts[idx1]
+            text2 = texts[idx2]
+            if box1.intersects(box2):
+                no_overlap = False
+                center1 = np.array(box1.centroid)
+                center2 = np.array(box2.centroid)
+                dist = (center1 - center2) / norm(center1 - center2)
+                vec = np.array([dist[1] * jiggle_x, dist[0] * jiggle_y])
+                pos1 = center1 + vec
+                pos2 = center2 - vec
+                text1.set_va('center')
+                text1.set_ha('center')
+                text2.set_va('center')
+                text2.set_ha('center')
+                text1.set_position(pos1)
+                text2.set_position(pos2)
+                break
+        if no_overlap:
+            break
+        # Add a white background to the text boxes:
+        for txt in texts:
+            txt.set_backgroundcolor('#ffffffe0')
+
+
+def _add_2d_loading_lines(axi, pca, coefficients1, coefficients2, xvars,
+                          settings=None):
+    """Add loading lines to a 2D scores plot.
+
+    Parameters
+    ----------
+    axi : object like :class:`matplotlib.axes.Axes`
+        The plot to add the loadings to.
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    coefficients1 : object like :class:`numpy.ndarray`
+        The coefficients for the first principal component.
+    coefficients1 : object like :class:`numpy.ndarray`
+        The coefficients for the second principal component.
+    xvars : list of strings
+        The labels for the original variables.
+    settings : dict, optional
+        Settings for adding the loadings.
+
+    """
+    colors = generate_colors(len(xvars))
+    texts, patches, labels = [], [], []
+    for i, (coeff_x, coeff_y) in enumerate(zip(coefficients1, coefficients2)):
+        text, scat = _add_loading_line_text(
+            axi,
+            coeff_x,
+            coeff_y,
+            xvars[i],
+            color=colors[i],
+            settings=settings,
+        )
+        if scat is not None:
+            patches.append(scat)
+            labels.append(xvars[i])
+        if text is not None:
+            texts.append(text)
+    extra_artists = []
+    if settings is not None:
+        if texts:
+            extra_artists += texts
+        if settings.get('adjust_text', False) and texts:
+            adjust_text(texts)
+        if settings.get('jiggle_text', False) and texts:
+            jiggle_text(axi, texts)
+        if settings.get('add_legend', False) and patches and labels:
+            legend = Legend(
+                axi,
+                patches,
+                labels,
+                title='Variables:',
+                title_fontsize='large',
+                bbox_to_anchor=(1, 1),
+            )
+            axi.add_artist(legend)
+            extra_artists += [legend]
+    return extra_artists
+
+
+def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
+                  select_components=None, loading_settings=None, **kwargs):
+    """Plot scores from a PCA model.
+
+    Parameters
+    ----------
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    scores : object like :class:`numpy.ndarray`
+        The scores we are to plot.
+    xvars : list of strings
+        Labels for the original variables.
+    class_data : object like :class:`pandas.core.series.Series`, optional
+        Class information for the points (if available).
+    class_names : dict of strings
+        A mapping from the class data to labels/names.
+    select_componets : set of tuples of integers, optional
+        This variable can be used to select the principal components
+        we will create plot for. Note that the principal component
+        numbering will here start from 1 (and not 0). If this is not
+        given, all will be plotted.
+    loading_settings : dict, optional
+        Settings for adding the loadings.
+    kwargs : dict, optional
+        Additional settings for the plotting.
+
+    """
     components = pca.n_components_
     if components < 2:
         raise ValueError('Too few (< 2) principal components for a 2D plot!')
@@ -569,11 +823,7 @@ def pca_2d_scores(pca, scores, xvars,
                 continue
         fig, axi = plt.subplots()
         if class_data is None:
-            axi.scatter(
-                scores[:, idx1],
-                scores[:, idx2],
-                **kwargs
-            )
+            axi.scatter(scores[:, idx1], scores[:, idx2], **kwargs)
         else:
             for classid, idx in idx_class.items():
                 axi.scatter(
@@ -587,13 +837,44 @@ def pca_2d_scores(pca, scores, xvars,
             )
         axi.set_xlabel('Principal component {}'.format(idx1 + 1))
         axi.set_ylabel('Principal component {}'.format(idx2 + 1))
+        if loading_settings is not None:
+            # Add lines for loadings:
+            extra_artists = _add_2d_loading_lines(
+                axi,
+                pca,
+                pca.components_[idx1, :],
+                pca.components_[idx2, :],
+                xvars,
+                settings=loading_settings,
+            )
         fig.tight_layout()
 
 
-def pca_1d_scores(pca, scores, xvars,
-                  class_data=None, class_names=None,
+def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
                   select_components=None, **kwargs):
-    """Plot scores from a PCA model."""
+    """Plot scores from a PCA model (1D)
+
+    Parameters
+    ----------
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    scores : object like :class:`numpy.ndarray`
+        The scores we are to plot.
+    xvars : list of strings
+        Labels for the original variables.
+    class_data : object like :class:`pandas.core.series.Series`, optional
+        Class information for the points (if available).
+    class_names : dict of strings
+        A mapping from the class data to labels/names.
+    select_componets : set of tuples of integers, optional
+        This variable can be used to select the principal components
+        we will create plot for. Note that the principal component
+        numbering will here start from 1 (and not 0). If this is not
+        given, all will be plotted.
+    kwargs : dict, optional
+        Additional settings for the plotting.
+
+    """
     components = pca.n_components_
     color_class, color_labels, idx_class = generate_class_colors(class_data)
     for idx1 in range(components):
