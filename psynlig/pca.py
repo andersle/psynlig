@@ -698,7 +698,6 @@ def jiggle_text(axi, texts, maxiter=1000):
             boxes.append(polygon)
         # Check all pairs to see who overlap:
         no_overlap = True
-        axi.figure.savefig('text-{:05d}.png'.format(i))
         for idx1, idx2 in combinations(range(len(boxes)), 2):
             box1 = boxes[idx1]
             box2 = boxes[idx2]
