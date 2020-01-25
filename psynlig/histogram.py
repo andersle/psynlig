@@ -18,16 +18,16 @@ def histograms(data, variables, class_data=None, class_names=None,
     Parameters
     ----------
     data : object like :class:`pandas.core.frame.DataFrame`
-        The data we are plotting.
-    variables : list of strings
+        The data we are creating histograms for.
+    variables : list of strings, optional
         The variables we are going to plot for.
     class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
-    class_names : dict of strings
+    class_names : dict of strings, optional
         A mapping from the class data to labels/names.
-    max_plots : integer
+    max_plots : integer, optional
         Maximum number of plots to keep in one figure.
-    ncol : integer
+    ncol : integer, optional
         Number of columns to use when plotting several histograms
         in the same figure.
     sharex : boolean, optional
@@ -86,7 +86,7 @@ def histogram1d(axi, data, variable, class_data=None, class_names=None,
         The variable we are going to plot for.
     class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
-    class_names : dict of strings
+    class_names : dict of strings, optional
         A mapping from the class data to labels/names.
     kwargs : dict, optional
         Additional settings for the plotting.
@@ -154,9 +154,9 @@ def _histogram2d_contour(axi, data, xvar, yvar, show_contour,
     counts : object like :class:`numpy.ndarray` or None
         The data points we will use to create the contour plot from.
     xedges : object like :class:`numpy.ndarray` or None
-        X-values for the binning used to obtain ``counts``
+        X-values for the binning used to obtain ``counts``.
     yedges : object like :class:`numpy.ndarray` or None
-        Y-values for the binning used to obtain ``counts``
+        Y-values for the binning used to obtain ``counts``.
     kwargs : dict, optional
         Additional settings for the contour plot.
 
@@ -193,15 +193,15 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
     data : object like :class:`pandas.core.frame.DataFrame`
         The data we are plotting, here it is assume that we
         can select the values given by ``xvar`` and ``yvar``.
-    xdata : string
+    xvar : string
         The variable to use as the x-variable.
-    ydata : string
+    yvar : string
         The variable to use as the y-variable.
     class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
-    class_names : dict of strings
+    class_names : dict of strings, optional
         A mapping from the class data to labels/names.
-    show_hist : boolean, optional
+    show_hist : boolean, optional, optional
         If True, we will display the 2D histogram.
     show_scatter : boolean, optional
         If True, we will show the raw data used to obtain the

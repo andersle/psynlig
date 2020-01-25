@@ -2,6 +2,7 @@
 # Distributed under the MIT License. See LICENSE for more info.
 """A module defining plots for PCA results."""
 from itertools import combinations
+import warnings
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from matplotlib.legend import Legend
@@ -29,7 +30,7 @@ def pca_explained_variance(pca, axi=None, **kwargs):
     axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
-    kwargs : dict
+    kwargs : dict, optional
         Additional settings for plotting explained variance.
 
     Returns
@@ -66,7 +67,7 @@ def pca_residual_variance(pca, axi=None, **kwargs):
     axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
-    kwargs : dict
+    kwargs : dict, optional
         Additional settings for plotting explained variance.
 
     Returns
@@ -103,7 +104,7 @@ def pca_scree(pca, axi=None, **kwargs):
     axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
-    kwargs : dict
+    kwargs : dict, optional
         Additional settings for the plotting.
 
     Returns
@@ -140,7 +141,7 @@ def pca_explained_variance_bar(pca, axi=None, **kwargs):
     axi : object like :class:`matplotlib.axes.Axes`, optional
         If given, the plot will be added to the specified axis.
         Otherwise, a new axis (and figure) will be created here.
-    kwargs : dict
+    kwargs : dict, optional
         Additional settings for plotting explained variance.
 
     Returns
@@ -174,7 +175,7 @@ def pca_explained_variance_bar(pca, axi=None, **kwargs):
 
 
 def pca_explained_variance_pie(pca, axi=None, tol=1.0e-3):
-    """Show the explained variance as function of PCA components.
+    """Show the explained variance as function of PCA components in a pie.
 
     Parameters
     ----------
@@ -185,7 +186,8 @@ def pca_explained_variance_pie(pca, axi=None, tol=1.0e-3):
         Otherwise, a new axis (and figure) will be created here.
     tol : float, optional
         A tolerance for the missing variance. If the unexplained
-        variance is less than this tolerance, it will not be shown.
+        variance is less than this tolerance, it will not be shown in
+        the pie chart.
 
     Returns
     -------
@@ -268,17 +270,19 @@ def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
                 pca_loadings_bar(axi, coefficients, xvars,
                                  plot_type=plot_type.lower())
             else:
-                pca_1d_loadings_component(axi, coefficients, xvars, colors)
+                _pca_1d_loadings_component(axi, coefficients, xvars, colors)
         except AttributeError:
-            pca_1d_loadings_component(axi, coefficients, xvars, colors)
+            _pca_1d_loadings_component(axi, coefficients, xvars, colors)
         fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
     return figures, axes
 
 
-def pca_1d_loadings_component(axi, coefficients, xvars, colors):
+def _pca_1d_loadings_component(axi, coefficients, xvars, colors):
     """Plot the loadings for a single component in a 1D plot.
+
+    This plot will show the components on a single line.
 
     Parameters
     ----------
@@ -381,7 +385,7 @@ def pca_loadings_bar(axi, coefficients, xvars, plot_type='bar'):
 def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
                      annotate=True, textcolors=None, plot_style=None,
                      **kwargs):
-    """Plot the contributions from variables to the principal components.
+    """Show contributions from variables to PC's in a heat map.
 
     Parameters
     ----------
@@ -391,16 +395,17 @@ def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
         The labels for the original variables.
     val_fmt : string, optional
         The format of the annotations inside the heat map.
+    bubble : boolean, optional
+        If True, we will draw bubbles to indicate the size of the
+        given data points.
+    annotate : boolean, optional
+        If True, we will write annotate the plot with values for the
+        contributions.
     textcolors : list of strings, optional
         Colors used for the text. The number of colors provided defines
         a binning for the data values, and values are colored with the
         corresponding color. If no colors are provided, all are colored
         black.
-    bubble : boolean, optional
-        If True, we will draw bubbles to indicate the size of the
-        given data points.
-    annotate : boolean, optional
-        If True, we will write the values as text in the plot.
     plot_style : string, optional
         Determines how the cofficients are plotted:
 
@@ -441,6 +446,7 @@ def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
         xvars,
         comp,
         cbarlabel=label,
+        val_fmt=val_fmt,
         annotate=annotate,
         bubble=bubble,
         textcolors=textcolors,
@@ -451,7 +457,7 @@ def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
 
 def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
                     style='box'):
-    """Plot the loadings from a PCA in a 2D plot.
+    """Show loadings for two principal compoents.
 
     Parameters
     ----------
@@ -493,8 +499,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
         fig, axi = plt.subplots()
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
-        pca_2d_loadings_component(axi, coefficients1, coefficients2,
-                                  xvars, colors, adjust_labels=adjust_labels)
+        _pca_2d_loadings_component(axi, coefficients1, coefficients2,
+                                   xvars, colors, adjust_labels=adjust_labels)
         axi.set(
             xlabel='Principal component {}'.format(idx1 + 1),
             ylabel='Principal component {}'.format(idx2 + 1),
@@ -520,8 +526,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
     return figures, axes
 
 
-def pca_2d_loadings_component(axi, coefficients1, coefficients2,
-                              xvars, colors, adjust_labels=False):
+def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
+                               xvars, colors, adjust_labels=False):
     """Plot the loadings for two components in a 2D plot.
 
     Parameters
@@ -579,6 +585,9 @@ def pca_2d_loadings_component(axi, coefficients1, coefficients2,
 def _get_selector(components, select_components, combi):
     """Get a selector for components.
 
+    This is helper method in case we select a subset of
+    components, or wish to plot for all combinations.
+
     Parameters
     ----------
     components : integer
@@ -588,7 +597,7 @@ def _get_selector(components, select_components, combi):
         all combinations.
     combi : integer
         The number of combinations of the components we
-        are selecting.
+        are selecting, in the case we are to generate them here.
 
     Returns
     -------
@@ -613,7 +622,7 @@ def _get_selector(components, select_components, combi):
 
 
 def pca_3d_loadings(pca, xvars, select_components=None):
-    """Plot the loadings from a PCA in a 3D plot.
+    """Show contributions to three principal components.
 
     Parameters
     ----------
@@ -651,17 +660,17 @@ def pca_3d_loadings(pca, xvars, select_components=None):
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
         coefficients3 = np.transpose(pca.components_[idx3, :])
-        pca_3d_loadings_component(axi, coefficients1, coefficients2,
-                                  coefficients3, xvars, colors)
+        _pca_3d_loadings_component(axi, coefficients1, coefficients2,
+                                   coefficients3, xvars, colors)
         fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
     return figures, axes
 
 
-def pca_3d_loadings_component(axi, coefficients1, coefficients2,
-                              coefficients3, xvars, colors):
-    """Plot the loadings for two components in a 2D plot.
+def _pca_3d_loadings_component(axi, coefficients1, coefficients2,
+                               coefficients3, xvars, colors):
+    """Show contributions to three principal components.
 
     Parameters
     ----------
@@ -708,7 +717,39 @@ def pca_3d_loadings_component(axi, coefficients1, coefficients2,
 
 def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
                            settings=None):
-    """Add a loading line to a plot."""
+    """Add a loading line to a plot.
+
+    This method is used when creating biplots.
+
+    Parameters
+    ----------
+    axi : object like :class:`matplotlib.axes.Axes`
+        The plot to add the loadings to.
+    xcoeff : float
+        The loading along the first principal component.
+    ycoeff : float
+        The loading along the second principal component,
+    label : string
+        The name of the original variable we are plotting the loadings
+        for.
+    color : string, optional
+        The color to use for the text and symbol.
+    settings : dict, optional
+        Settings for adding the loadings. Possible settings are:
+
+        * ``add_legend``: If this is True, we add a legend to the plot.
+
+        * ``add_text``: If this is True, we will annotate the plot with
+          labels for the variables.
+
+    Returns
+    -------
+    text : object like :class:`matplotlib.text.Text` or None
+        This is the text added to the plot, if any.
+    scat : object like :class:`matplotlib.collections.PathCollection` or Nine
+        A scatter point used to generate a legend, if any.
+
+    """
     text = None
     scat = None
     # First plot the "real" length:
@@ -758,16 +799,36 @@ def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
         The plot to add the loadings to.
     coefficients1 : object like :class:`numpy.ndarray`
         The coefficients for the first principal component.
-    coefficients1 : object like :class:`numpy.ndarray`
+    coefficients2 : object like :class:`numpy.ndarray`
         The coefficients for the second principal component.
     xvars : list of strings
         The labels for the original variables.
     settings : dict, optional
-        Settings for adding the loadings.
+        Settings for adding the loadings. Possible settings are:
+
+        * ``adjust_text``: If this is set to True, we will attempt to
+          adjust generated text so that they won't overlap.
+
+        * ``jiggle_text``: If this is set to True, we will attempt to
+          move text around to avoid overlap with other text boxes.
+          This can be used as an alternativ to ``adjust_text``.
+
+        * ``add_legend``: If this is True, we add a legend to the plot.
+
+        * ``add_text``: If this is True, we will annotate the plot with
+          labels for the variables.
+
+    Returns
+    -------
+    extra_artists : list of objects like :class:`matplotlib.artist.Artist`
+        Artists added to the plot in this method.
+    legend : object like :class:`matplotlib.legend.Legend` or None
+        The extra legend created here, if any.
 
     """
     colors = generate_colors(len(xvars))
     texts, patches, labels = [], [], []
+    legend = None
     for i, (coeff_x, coeff_y) in enumerate(zip(coefficients1, coefficients2)):
         text, scat = _add_loading_line_text(
             axi,
@@ -801,12 +862,13 @@ def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
             )
             axi.add_artist(legend)
             extra_artists += [legend]
-    return extra_artists
+    return extra_artists, legend
 
 
 def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
-                  select_components=None, loading_settings=None, **kwargs):
-    """Plot scores from a PCA model.
+                  select_components=None, loading_settings=None,
+                  savefig=None, **kwargs):
+    """Plot scores from a PCA model anlong two PC's.
 
     Parameters
     ----------
@@ -827,6 +889,10 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
         given, all will be plotted.
     loading_settings : dict, optional
         Settings for adding the loadings.
+    savefig : string, optional
+        If this is given, we will here save the figure to a file.
+        This is included here due to potential problems with large
+        legends and displaying them in a interactive plot.
     kwargs : dict, optional
         Additional settings for the plotting.
 
@@ -855,14 +921,38 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
         axi.set_ylabel('Principal component {}'.format(idx2 + 1))
         if loading_settings is not None:
             # Add lines for loadings:
-            extra_artists = _add_2d_loading_lines(
+            extra_artists, legend = _add_2d_loading_lines(
                 axi,
                 pca.components_[idx1, :],
                 pca.components_[idx2, :],
                 xvars,
                 settings=loading_settings,
             )
-        fig.tight_layout()
+            fig.tight_layout()
+            if legend is not None and savefig is None:
+                renderer = fig.canvas.get_renderer()
+                transform_ax = axi.transAxes.inverted()
+                box = legend.get_window_extent(renderer=renderer)
+                box_ax = box.transformed(transform_ax)
+                if box_ax.x1 - 1 > 0:
+                    width = box_ax.x1 - box_ax.x0
+                    fig.subplots_adjust(right=1.0-width)
+                if box_ax.y0 - 0 < 0:
+                    warnings.warn(
+                        (
+                            'Legend is too hight to fit in plot, consider '
+                            'saving the plot with the xxx setting'
+                        ),
+                        RuntimeWarning
+                    )
+        else:
+            fig.tight_layout()
+        if savefig is not None:
+            fig.savefig(
+                savefig,
+                bbox_extra_artists=extra_artists,
+                bbox_inches='tight',
+            )
 
 
 def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,

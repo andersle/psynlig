@@ -5,7 +5,8 @@ PCA Scores (2D) with loadings
 =============================
 
 This example will plot PCA scores along two principal axes and
-also show the loadings.
+also show the loadings. Here we show labels in a legend, rather
+than in the plot, to avoid making the plot too crowded.
 """
 from matplotlib import pyplot as plt
 import pandas as pd
@@ -38,9 +39,8 @@ pca = PCA()
 scores = pca.fit_transform(data)
 
 loading_settings = {
-    'adjust_text': False,
-    'add_text': True,
-    'jiggle_text': True,
+    'add_text': False,
+    'add_legend': True,
 }
 
 pca_2d_scores(
