@@ -17,6 +17,8 @@ import sys
 from datetime import date
 import warnings
 import psynlig
+from sphinx_gallery.sorting import FileNameSortKey
+
 
 # Disable matplotlib warnings for generation of gallery:
 warnings.filterwarnings(
@@ -98,7 +100,8 @@ intersphinx_mapping = {
 
 # Settings for gallery:
 sphinx_gallery_conf = {
-    'examples_dirs': 'gallery',
-    'gallery_dirs': 'auto_examples',
+    'examples_dirs': ['gallery'],
+    'gallery_dirs': ['auto_examples'],
     'download_all_examples': False,
+    'within_subsection_order': FileNameSortKey,
 }

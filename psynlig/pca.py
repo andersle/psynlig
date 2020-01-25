@@ -7,11 +7,15 @@ from matplotlib.ticker import MaxNLocator
 from matplotlib.legend import Legend
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 import numpy as np
-from numpy.linalg import norm
-from shapely.geometry import Polygon
 from adjustText import adjust_text
 from .colors import generate_colors, generate_class_colors
-from .common import MARKERS, set_origin_axes
+from .heatmap import plot_annotated_heatmap
+from .common import (
+    MARKERS,
+    set_origin_axes,
+    find_axis_intersection,
+    jiggle_text,
+)
 from .scatter import create_scatter_legend
 
 
@@ -215,7 +219,7 @@ def pca_explained_variance_pie(pca, axi=None, tol=1.0e-3):
     return fig, axi
 
 
-def pca_1d_loadings(pca, xvars, select_components=None):
+def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
     """Plot the loadings from a PCA in a 1D plot.
 
     Parameters
@@ -229,6 +233,18 @@ def pca_1d_loadings(pca, xvars, select_components=None):
         we will create plot for. Note that the principal component
         numbering will here start from 1 (and not 0). If this is not
         given, all will be plotted.
+    plot_type : string, optional
+        Select the kind of plot we will be making. Possible values are:
+
+        * ``line``: For generating a 1D line with contributions.
+
+        * ``bar``: For generating a bar plot of the contributions.
+
+        * ``bar-square``: For generating a bar plot of the squared
+          contributions.
+
+        * ``bar-absolute``: For generating a bar plot of the absolute
+          value of contributions.
 
     Returns
     -------
@@ -242,16 +258,19 @@ def pca_1d_loadings(pca, xvars, select_components=None):
     axes = []
     components = pca.n_components_
     colors = generate_colors(len(xvars))
-    for i in range(components):
-        if select_components is None:
-            pass
-        else:
-            if (i + 1) not in select_components:
-                continue
+    selector = _get_selector(components, select_components, 1)
+    for i in selector:
         fig, axi = plt.subplots()
         axi.set_title('Principal component {}'.format(i + 1))
         coefficients = np.transpose(pca.components_[i, :])
-        pca_1d_loadings_component(axi, coefficients, xvars, colors)
+        try:
+            if plot_type.lower().startswith('bar'):
+                pca_loadings_bar(axi, coefficients, xvars,
+                                 plot_type=plot_type.lower())
+            else:
+                pca_1d_loadings_component(axi, coefficients, xvars, colors)
+        except AttributeError:
+            pca_1d_loadings_component(axi, coefficients, xvars, colors)
         fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
@@ -324,6 +343,112 @@ def pca_1d_loadings_component(axi, coefficients, xvars, colors):
     axi.set_xticklabels([-1, -0.5, 0.0, 0.5, 1])
 
 
+def pca_loadings_bar(axi, coefficients, xvars, plot_type='bar'):
+    """Plot the loadings for a single component in a bar plot.
+
+    Parameters
+    ----------
+    axi : object like :class:`matplotlib.axes.Axes`
+        The plot we will add the loadings to.
+    coefficients : object like :class:`numpy.ndarray`
+        The coefficients we are to show.
+    xvars : list of strings
+        Labels for the original variables.
+    plot_type : string, optional
+        Selects the type of plot we are making.
+
+    """
+    xpos = range(len(coefficients))
+    if plot_type == 'bar-square':
+        yval = coefficients**2
+        ylabel = 'Squared coefficients'
+    elif plot_type == 'bar-absolute':
+        yval = np.abs(coefficients)
+        ylabel = 'Absolute value of coefficients'
+    else:
+        yval = coefficients
+        ylabel = 'Coefficient'
+    axi.set_ylabel(ylabel)
+    axi.axhline(y=0, ls=':', color='#262626')
+    axi.bar(xpos, yval)
+    axi.set_xticks(xpos)
+    axi.set_xticklabels(
+        xvars,
+        rotation='vertical',
+    )
+
+
+def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
+                     annotate=True, textcolors=None, plot_style=None,
+                     **kwargs):
+    """Plot the contributions from variables to the principal components.
+
+    Parameters
+    ----------
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    xvars : list of strings
+        The labels for the original variables.
+    val_fmt : string, optional
+        The format of the annotations inside the heat map.
+    textcolors : list of strings, optional
+        Colors used for the text. The number of colors provided defines
+        a binning for the data values, and values are colored with the
+        corresponding color. If no colors are provided, all are colored
+        black.
+    bubble : boolean, optional
+        If True, we will draw bubbles to indicate the size of the
+        given data points.
+    annotate : boolean, optional
+        If True, we will write the values as text in the plot.
+    plot_style : string, optional
+        Determines how the cofficients are plotted:
+
+        * ``absolute``: The absolute value of the coefficients will
+          be plotted.
+
+        * ``squared``: The squared value of the coefficients will be
+          plotted.
+
+        Otherwise, the actual value of the coefficients will be used.
+
+    **kwargs : dict, optional
+        Arguments used for drawing the heat map.
+
+    Returns
+    -------
+    fig : object like :class:`matplotlib.figure.Figure`
+        The figure in which the heatmap is plotted.
+    axi : object like :class:`matplotlib.axes.Axes`
+        The axis to which the heatmap is added.
+
+    """
+    components = pca.components_
+    label = 'Coefficients'
+    # rows: PC, columns: variables
+    comp = ['PC{}'.format(i + 1) for i in range(pca.n_components_)]
+    try:
+        if plot_style.lower() == 'absolute':
+            components = np.abs(components)
+            label = 'Absolute coefficients'
+        elif plot_style.lower() == 'squared':
+            components = components**2
+            label = 'Squared coefficients'
+    except AttributeError:
+        pass
+    fig1, ax1 = plot_annotated_heatmap(
+        components.T,
+        xvars,
+        comp,
+        cbarlabel=label,
+        annotate=annotate,
+        bubble=bubble,
+        textcolors=textcolors,
+        **kwargs
+    )
+    return fig1, ax1
+
+
 def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
                     style='box'):
     """Plot the loadings from a PCA in a 2D plot.
@@ -363,12 +488,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
     if components < 2:
         raise ValueError('Too few (< 2) principal components for a 2D plot!')
     colors = generate_colors(len(xvars))
-    for idx1, idx2 in combinations(range(components), 2):
-        if select_components is None:
-            pass
-        else:
-            if (idx1 + 1, idx2 + 1) not in select_components:
-                continue
+    selector = _get_selector(components, select_components, 2)
+    for idx1, idx2 in selector:
         fig, axi = plt.subplots()
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
@@ -455,6 +576,42 @@ def pca_2d_loadings_component(axi, coefficients1, coefficients2,
     axi.set_ylim(-1, 1)
 
 
+def _get_selector(components, select_components, combi):
+    """Get a selector for components.
+
+    Parameters
+    ----------
+    components : integer
+        The number of components we are selecting from,
+    select_components : iterable or None
+        The items we are to pick. If this is None, we select
+        all combinations.
+    combi : integer
+        The number of combinations of the components we
+        are selecting.
+
+    Returns
+    -------
+    selector : generator
+        A generator which gives the indices for the components
+        we are to select.
+
+    """
+    if select_components is None:
+        if combi == 1:
+            selector = range(components)
+        else:
+            selector = combinations(range(components), combi)
+    else:
+        if combi == 1:
+            selector = (i - 1 for i in select_components)
+        else:
+            selector = (
+                (i - 1 for i in j) for j in select_components
+            )
+    return selector
+
+
 def pca_3d_loadings(pca, xvars, select_components=None):
     """Plot the loadings from a PCA in a 3D plot.
 
@@ -484,12 +641,8 @@ def pca_3d_loadings(pca, xvars, select_components=None):
     if components < 3:
         raise ValueError('Too few (< 3) principal components for a 3D plot!')
     colors = generate_colors(len(xvars))
-    for idx1, idx2, idx3 in combinations(range(components), 3):
-        if select_components is None:
-            pass
-        else:
-            if (idx1 + 1, idx2 + 1, idx3 + 1) not in select_components:
-                continue
+    selector = _get_selector(components, select_components, 3)
+    for idx1, idx2, idx3 in selector:
         fig = plt.figure()
         axi = fig.add_subplot(111, projection='3d')
         axi.set_xlabel('Principal component {}'.format(idx1 + 1), labelpad=15)
@@ -553,90 +706,21 @@ def pca_3d_loadings_component(axi, coefficients1, coefficients2,
     axi.plot([0, 0], [0, 0], [-1, 1], ls=':', color='#262626', alpha=0.8)
 
 
-def _find_intersect(axi, xcoeff, ycoeff):
-    """Find intersection between a line and the bounds of the axis.
-
-    Parameters
-    ----------
-    axi : object like :class:`matplotlib.axes.Axes`
-        The plot to add the loadings to.
-    xcoeff : float
-        The x-value for the line we are to extend.
-    ycoeff : float
-        The y-value for the line we are to extend.
-
-    Return
-    ------
-    xend : float
-        The x ending point for the extended line.
-    yend : float
-        The y ending point for the extended line.
-
-    """
-    xmin, xmax = min(axi.get_xlim()), max(axi.get_xlim())
-    ymin, ymax = min(axi.get_ylim()), max(axi.get_ylim())
-    xend, yend = None, None
-
-    def direction(xhat, yhat):
-        return np.sign(xcoeff * xhat + ycoeff * yhat) > 0
-
-    if xcoeff == 0 and ycoeff == 0:
-        # Can not extend it...
-        pass
-    else:
-        if xcoeff == 0:
-            xend = 0
-            yend = ymax if ycoeff > 0 else ymin
-        elif ycoeff == 0:
-            xend = xmax if xcoeff > 0 else xmin
-            yend = 0
-        else:
-            # Line 1)
-            yhat = ycoeff * xmin / xcoeff
-            if ymin <= yhat <= ymax and direction(xmin, yhat):
-                xend = xmin
-                yend = yhat
-            # Line 2)
-            xhat = xcoeff * ymin / ycoeff
-            if xmin <= xhat <= xmax and direction(xhat, ymin):
-                xend = xhat
-                yend = ymin
-            # Line 3)
-            yhat = ycoeff * xmax / xcoeff
-            if ymin <= yhat <= ymax and direction(xmax, yhat):
-                xend = xmax
-                yend = yhat
-            # Line 4)
-            xhat = xcoeff * ymax / ycoeff
-            if xmin <= xhat <= xmax and direction(xhat, ymax):
-                xend = xhat
-                yend = ymax
-    return xend, yend
-
-
 def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
                            settings=None):
     """Add a loading line to a plot."""
     text = None
     scat = None
     # First plot the "real" length:
-    line, = axi.plot(
-        [0, xcoeff],
-        [0, ycoeff],
-        color='black',
-        alpha=0.8
-    )
+    line, = axi.plot([0, xcoeff], [0, ycoeff], color='black', alpha=0.8)
     # Then extend the line so that the length is the given length:
     xlim, ylim = axi.get_xlim(), axi.get_ylim()
-    xend, yend = _find_intersect(axi, xcoeff, ycoeff)
+    xend, yend = find_axis_intersection(axi, xcoeff, ycoeff)
     if xend is None or yend is None:
         xend, yend = xcoeff, ycoeff
     axi.plot(
-        [0, xend],
-        [0, yend],
-        ls=':',
-        color=line.get_color(),
-        alpha=line.get_alpha()
+        [0, xend], [0, yend],
+        ls=':', color=line.get_color(), alpha=line.get_alpha()
     )
     # Check if we should add text:
     if settings is not None and settings.get('add_text', False):
@@ -664,68 +748,7 @@ def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
     return text, scat
 
 
-def jiggle_text(axi, texts, maxiter=1000):
-    """Attempt to jiggle text around so that they do not overlap.
-
-    Parameters
-    ----------
-    axi : object like :class:`matplotlib.axes.Axes`
-        The axis the text boxes reside in.
-    texts : list of objects like :class:`matplotlib.text.Text`
-        The text boxes we attempt to jiggle around.
-    maxiter : integer, optional
-        The maximum number of attempts we make to jiggle the
-        text around.
-
-    """
-    renderer = axi.figure.canvas.get_renderer()
-    transform_data = axi.transData.inverted()
-    jiggle_x = (max(axi.get_xlim()) - min(axi.get_xlim())) * 0.01
-    jiggle_y = (max(axi.get_ylim()) - min(axi.get_ylim())) * 0.01
-    for i in range(maxiter):
-        boxes = []
-        for txt in texts:
-            box = txt.get_window_extent(renderer=renderer)
-            box_data = box.transformed(transform_data)
-            polygon = Polygon(
-                [
-                    (box_data.x0, box_data.y0),
-                    (box_data.x0, box_data.y1),
-                    (box_data.x1, box_data.y1),
-                    (box_data.x1, box_data.y0),
-                ]
-            )
-            boxes.append(polygon)
-        # Check all pairs to see who overlap:
-        no_overlap = True
-        for idx1, idx2 in combinations(range(len(boxes)), 2):
-            box1 = boxes[idx1]
-            box2 = boxes[idx2]
-            text1 = texts[idx1]
-            text2 = texts[idx2]
-            if box1.intersects(box2):
-                no_overlap = False
-                center1 = np.array(box1.centroid)
-                center2 = np.array(box2.centroid)
-                dist = (center1 - center2) / norm(center1 - center2)
-                vec = np.array([dist[1] * jiggle_x, dist[0] * jiggle_y])
-                pos1 = center1 + vec
-                pos2 = center2 - vec
-                text1.set_va('center')
-                text1.set_ha('center')
-                text2.set_va('center')
-                text2.set_ha('center')
-                text1.set_position(pos1)
-                text2.set_position(pos2)
-                break
-        if no_overlap:
-            break
-        # Add a white background to the text boxes:
-        for txt in texts:
-            txt.set_backgroundcolor('#ffffffe0')
-
-
-def _add_2d_loading_lines(axi, pca, coefficients1, coefficients2, xvars,
+def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
                           settings=None):
     """Add loading lines to a 2D scores plot.
 
@@ -733,8 +756,6 @@ def _add_2d_loading_lines(axi, pca, coefficients1, coefficients2, xvars,
     ----------
     axi : object like :class:`matplotlib.axes.Axes`
         The plot to add the loadings to.
-    pca : object like :class:`sklearn.decomposition._pca.PCA`
-        The results from a PCA analysis.
     coefficients1 : object like :class:`numpy.ndarray`
         The coefficients for the first principal component.
     coefficients1 : object like :class:`numpy.ndarray`
@@ -814,12 +835,8 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
     if components < 2:
         raise ValueError('Too few (< 2) principal components for a 2D plot!')
     color_class, color_labels, idx_class = generate_class_colors(class_data)
-    for idx1, idx2 in combinations(range(components), 2):
-        if select_components is None:
-            pass
-        else:
-            if (idx1 + 1, idx2 + 1) not in select_components:
-                continue
+    selector = _get_selector(components, select_components, 2)
+    for idx1, idx2 in selector:
         fig, axi = plt.subplots()
         if class_data is None:
             axi.scatter(scores[:, idx1], scores[:, idx2], **kwargs)
@@ -840,7 +857,6 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
             # Add lines for loadings:
             extra_artists = _add_2d_loading_lines(
                 axi,
-                pca,
                 pca.components_[idx1, :],
                 pca.components_[idx2, :],
                 xvars,
@@ -876,12 +892,8 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
     """
     components = pca.n_components_
     color_class, color_labels, idx_class = generate_class_colors(class_data)
-    for idx1 in range(components):
-        if select_components is None:
-            pass
-        else:
-            if (idx1 + 1) not in select_components:
-                continue
+    selector = _get_selector(components, select_components, 1)
+    for idx1 in selector:
         fig, axi = plt.subplots()
         if class_data is None:
             axi.scatter(

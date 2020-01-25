@@ -3,11 +3,41 @@
 """A module defining helper methods for creating a heat map."""
 from matplotlib import pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
+from matplotlib.patches import Circle, Rectangle
 import numpy as np
 
 
+def create_bubbles(data, img, axi):
+    """Create bubbles for a heat map.
+
+    Parameters
+    ----------
+    data : object like :class:`numpy.ndarray`
+        A 2D numpy array of shape (N, M).
+    img : object like :class:`matplotlib.image.AxesImage`
+        The heat map image we have generated..
+    axi : object like :class:`matplotlib.axes.Axes`,
+        An axis to plot the heat map.
+
+    """
+    vals = img.get_array()
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            value = img.norm(vals[i, j])
+            color = img.cmap(value)
+            if i % 2 == 0:
+                rect = Rectangle((j-0.5, i-0.5), 1, 1, color='0.8')
+            else:
+                rect = Rectangle((j-0.5, i-0.5), 1, 1, color='0.9')
+            axi.add_artist(rect)
+            circle = Circle((j, i), radius=np.abs(value)*0.5*0.90,
+                            color=color)
+            axi.add_artist(circle)
+    img.set_visible(False)
+
+
 def heatmap(data, row_labels, col_labels, axi=None, fig=None,
-            cbar_kw=None, cbarlabel='', **kwargs):
+            cbar_kw=None, cbarlabel='', bubble=False, **kwargs):
     """Create a heat map from a numpy array and two lists of labels.
 
     Parameters
@@ -28,6 +58,9 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         A dictionary with arguments to the creation of the color bar.
     cbarlabel : string, optional
         The label for the color bar.
+    bubble : boolean, optional
+        If True, we will draw bubbles indicating the size
+        of the given data points.
     **kwargs : dict, optional
         Arguments used for drawing the heat map.
 
@@ -55,6 +88,9 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
 
     # Plot the heatmap:
     img = axi.imshow(data, **kwargs)
+    # Check if this is a bubble map:
+    if bubble:
+        create_bubbles(data, img, axi)
 
     # Create colorbars:
     if cbar_kw is None:
@@ -86,10 +122,16 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         spine.set_visible(False)
 
     # Add white grid:
+    axi.grid(False)
     axi.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
     axi.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
-    axi.grid(which='minor', color='white', linestyle='-', linewidth=3)
-    axi.tick_params(which='minor', bottom=False, left=False)
+    if bubble:
+        axi.grid(which='minor', color='white', linestyle='-', linewidth=3)
+        axi.tick_params(which='minor', bottom=False, left=False)
+        axi.tick_params(which='major', top=False, left=False)
+    else:
+        axi.grid(which='minor', color='white', linestyle='-', linewidth=3)
+        axi.tick_params(which='minor', bottom=False, left=False)
     if fig is not None:
         fig.tight_layout()
     return fig, axi, img, cbar
@@ -148,7 +190,8 @@ def annotate_heatmap(img, data=None, val_fmt='{x:.2f}', textcolors=None,
     return texts
 
 
-def plot_heatmap(data, val_fmt='{x:.2f}', textcolors=None, **kwargs):
+def plot_correlation_heatmap(data, val_fmt='{x:.2f}', bubble=False,
+                             annotate=True, textcolors=None, **kwargs):
     """Plot a heat map to investigate correlations.
 
     Parameters
@@ -157,6 +200,11 @@ def plot_heatmap(data, val_fmt='{x:.2f}', textcolors=None, **kwargs):
         The data we will generate a heat correlation map from.
     val_fmt : string, optional
         The format of the annotations inside the heat map.
+    bubble : optional, boolean
+        If True, we will draw bubbles to indicate the size of the
+        given data points.
+    annotate : boolean, optional
+        If True, we will write the values as text in the plot.
     textcolors : list of strings, optional
         Colors used for the text. The number of colors provided defines
         a binning for the data values, and values are colored with the
@@ -174,21 +222,74 @@ def plot_heatmap(data, val_fmt='{x:.2f}', textcolors=None, **kwargs):
 
     """
     corr = data.corr(method='pearson')
-    fig1, ax1 = plt.subplots()
-    _, _, img, _ = heatmap(
+    fig1, ax1 = plot_annotated_heatmap(
         corr,
         data.columns,
         data.columns,
-        axi=ax1,
         cbarlabel='Pearson correlation coefficient',
+        val_fmt=val_fmt,
+        bubble=bubble,
+        textcolors=textcolors,
+        annotate=annotate,
+        **kwargs
+    )
+    return fig1, ax1
+
+
+def plot_annotated_heatmap(data, row_labels, col_labels, cbarlabel='',
+                           val_fmt='{x:.2f}', textcolors=None, bubble=False,
+                           annotate=True, **kwargs):
+    """Plot a heat map to investigate correlations.
+
+    Parameters
+    ----------
+    data : object like :class:`numpy.ndarray`
+        A 2D numpy array of shape (N, M).
+    row_labels : list of strings
+        A list or array of length N with the labels for the rows.
+    col_labels : list of strings
+        A list or array of length M with the labels for the columns.
+    cbarlabel : string, optional
+        The label for the color bar.
+    val_fmt : string, optional
+        The format of the annotations inside the heat map.
+    textcolors : list of strings, optional
+        Colors used for the text. The number of colors provided defines
+        a binning for the data values, and values are colored with the
+        corresponding color. If no colors are provided, all are colored
+        black.
+    bubble : boolean, optional
+        If True, we will draw bubbles to indicate the size of the
+        given data points.
+    annotate : boolean, optional
+        If True, we will write the values as text in the plot.
+    **kwargs : dict, optional
+        Arguments used for drawing the heat map.
+
+    Returns
+    -------
+    fig : object like :class:`matplotlib.figure.Figure`
+        The figure in which the heatmap is plotted.
+    ax1 : object like :class:`matplotlib.axes.Axes`
+        The axis to which the heat map is added.
+
+    """
+    fig1, ax1 = plt.subplots()
+    _, _, img, _ = heatmap(
+        data,
+        row_labels,
+        col_labels,
+        axi=ax1,
+        cbarlabel=cbarlabel,
+        bubble=bubble,
         **kwargs.get('heatmap', {}),
     )
-    annotate_heatmap(
-        img,
-        val_fmt=val_fmt,
-        textcolors=textcolors,
-        **kwargs.get('text', {}),
-    )
-    ax1.grid(False)
+    if annotate:
+        annotate_heatmap(
+            img,
+            val_fmt=val_fmt,
+            textcolors=textcolors,
+            **kwargs.get('text', {}),
+        )
     fig1.tight_layout()
     return fig1, ax1

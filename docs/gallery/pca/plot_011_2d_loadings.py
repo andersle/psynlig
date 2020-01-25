@@ -22,7 +22,7 @@ pca = PCA()
 pca.fit_transform(data)
 
 pca_2d_loadings(pca, data_set['feature_names'],
-                select_components={(1, 2)},
+                select_components={(3, 4)},
                 adjust_labels=True)
 
 plt.show()
