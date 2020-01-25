@@ -24,13 +24,14 @@ def create_bubbles(data, img, axi):
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
             value = img.norm(vals[i, j])
+            radius = np.abs(vals[i, j]) * 0.5 * 0.9
             color = img.cmap(value)
             if i % 2 == 0:
                 rect = Rectangle((j-0.5, i-0.5), 1, 1, color='0.8')
             else:
                 rect = Rectangle((j-0.5, i-0.5), 1, 1, color='0.9')
             axi.add_artist(rect)
-            circle = Circle((j, i), radius=np.abs(value)*0.5*0.90,
+            circle = Circle((j, i), radius=radius,
                             color=color)
             axi.add_artist(circle)
     img.set_visible(False)

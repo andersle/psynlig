@@ -40,7 +40,8 @@ kwargs = {
     }
 }
 
-fig, _ = plot_correlation_heatmap(data, textcolors=['white', 'black'], **kwargs)
+fig, _ = plot_correlation_heatmap(data, textcolors=['white', 'black'],
+                                  **kwargs)
 # Increase figure size:
 fig.set_size_inches(14, 10)
 fig.tight_layout()

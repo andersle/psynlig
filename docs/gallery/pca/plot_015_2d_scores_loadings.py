@@ -49,7 +49,7 @@ pca_2d_scores(
     xvars,
     class_data=class_data,
     class_names=class_names,
-    select_components={(1, 2),},
+    select_components={(1, 2)},
     loading_settings=loading_settings,
     s=200,
     alpha=.8
