@@ -35,7 +35,7 @@ kwargs = {
     }
 }
 
-fig, _ = plot_correlation_heatmap(data, bubble=True, annotate=True, **kwargs)
+fig, _ = plot_correlation_heatmap(data, bubble=True, annotate=False, **kwargs)
 # Increase figure size:
 fig.set_size_inches(14, 10)
 fig.tight_layout()
