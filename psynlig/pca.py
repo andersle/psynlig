@@ -867,7 +867,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
 
 def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
                   select_components=None, **kwargs):
-    """Plot scores from a PCA model (1D)
+    """Plot scores from a PCA model (1D).
 
     Parameters
     ----------

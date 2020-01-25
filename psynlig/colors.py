@@ -10,18 +10,17 @@ def generate_colors(ncolors, cmap_name=None):
 
     Parameters
     ----------
-    ncolors : int
+    ncolors : integer
         The number of colors to generate.
     cmap_name : string, optional
-        A specific color map to use. If not provided, a color map
-        is selected based on the number of colors: If the number
-        of colors is less than 10, we will use tab10; if the number
-        is between 11 and 20, we will use tab20; otherwise, we will
-        use viridis.
+        A specific color map to use. If not provided, a color map is
+        selected based on the number of colors: If the number of colors
+        is less than 10, we will use tab10; if the number is between 11
+        and 20, we will use tab20; otherwise, we will use viridis.
 
     Returns
     -------
-    out : list of numpy.arrays
+    out : list of objects like :class:`numpy.ndarray`
         The colors generated.
 
     """
@@ -44,16 +43,21 @@ def generate_class_colors(class_data):
     Parameters
     ----------
     class_data : object like :class:`numpy.ndarray` or None
-        The (numeric) labels for the data.
+        The class labels for the data points. This is here assumed
+        to be numerical values. If None are given we do not generate
+        any colors here.
 
     Returns
     -------
     color_class : list of objects like :class:`numpy.ndarray`
-        The colors generated.
+        A list containing the colors generated here for the classes.
     color_labels : dict of objects like :class:`numpy.ndarray`
-        Colors for the different classes.
+        Colors for the different classes, that is ``color_labels[i]``
+        contains the color for class ``i``.
     idx_class : dict of integers
-        Indices for data classes.
+        Indices for data classes. That is ``idx_class[i]`` contains
+        the indices for the points in ``class_data`` which belongs
+        to class ``i``.
 
     """
     classes = None

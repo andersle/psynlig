@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 from matplotlib.patches import Circle, Rectangle
 import numpy as np
+from .common import set_up_fig_and_axis
 
 
 def create_bubbles(data, img, axi):
@@ -15,9 +16,9 @@ def create_bubbles(data, img, axi):
     data : object like :class:`numpy.ndarray`
         A 2D numpy array of shape (N, M).
     img : object like :class:`matplotlib.image.AxesImage`
-        The heat map image we have generated..
-    axi : object like :class:`matplotlib.axes.Axes`,
-        An axis to plot the heat map.
+        The heat map image we have generated.
+    axi : object like :class:`matplotlib.axes.Axes`
+        The axis to add the bubbles to.
 
     """
     vals = img.get_array()
@@ -50,7 +51,7 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
     col_labels : list of strings
         A list or array of length M with the labels for the columns.
     axi : object like :class:`matplotlib.axes.Axes`, optional
-        An axis to plot the heat map.  If not provided, a new axis
+        An axis to plot the heat map. If not provided, a new axis
         will be created.
     fig : object like :class:`matplotlib.figure.Figure`, optional
         The figure where the axes resides in. If given, tight layout
@@ -63,7 +64,7 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         If True, we will draw bubbles indicating the size
         of the given data points.
     **kwargs : dict, optional
-        Arguments used for drawing the heat map.
+        Additional arguments for drawing the heat map.
 
     Returns
     -------
@@ -77,15 +78,7 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         The color bar created for the heat map.
 
     """
-    if axi is None:
-        if fig is None:
-            fig, axi = plt.subplots()
-        else:
-            try:
-                axi = fig.axes[0]
-            except IndexError:
-                # Could not find axes. Create one:
-                axi = fig.add_subplot()
+    fig, axi = set_up_fig_and_axis(fig, axi)
 
     # Plot the heatmap:
     img = axi.imshow(data, **kwargs)
@@ -110,7 +103,7 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
     axi.set_yticks(np.arange(data.shape[0]))
     axi.set_yticklabels(row_labels)
 
-    # Let the horizontal axes labeling appear on top:
+    # Labels on top:
     axi.tick_params(
         top=True,
         bottom=False,
@@ -118,11 +111,11 @@ def heatmap(data, row_labels, col_labels, axi=None, fig=None,
         labelbottom=False
     )
 
-    # Turn spines off:
+    # Hide spines off:
     for _, spine in axi.spines.items():
         spine.set_visible(False)
 
-    # Add white grid:
+    # Add grid:
     axi.grid(False)
     axi.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
     axi.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
@@ -148,7 +141,7 @@ def annotate_heatmap(img, data=None, val_fmt='{x:.2f}', textcolors=None,
         The heat map image to be labeled.
     data : object like :class:`numpy.ndarray`, optional
         Data used to annotate the heat map. If not given, the
-        data in the image is used.
+        data in the heat map image (``img``) is used.
     val_fmt : string, optional
         The format of the annotations inside the heat map.
     textcolors : list of strings, optional
@@ -205,7 +198,7 @@ def plot_correlation_heatmap(data, val_fmt='{x:.2f}', bubble=False,
         If True, we will draw bubbles to indicate the size of the
         given data points.
     annotate : boolean, optional
-        If True, we will write the values as text in the plot.
+        If True, we will annotate the plot with values.
     textcolors : list of strings, optional
         Colors used for the text. The number of colors provided defines
         a binning for the data values, and values are colored with the
@@ -263,7 +256,7 @@ def plot_annotated_heatmap(data, row_labels, col_labels, cbarlabel='',
         If True, we will draw bubbles to indicate the size of the
         given data points.
     annotate : boolean, optional
-        If True, we will write the values as text in the plot.
+        If True, we will annotate the plot with values.
     **kwargs : dict, optional
         Arguments used for drawing the heat map.
 

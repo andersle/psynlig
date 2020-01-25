@@ -27,24 +27,58 @@ MARKERS = {
 
 
 def create_grid(n_plots, ncol):
-    """Create a grid for matplotlib given a number of plots and columns.
+    """Create a grid for axes given a number of plots and columns.
 
     Parameters
     ----------
     nplots : integer
-        The number of plots to create in total.
+        The total number of plots to create.
     ncol : integer
         The number of columns to create.
 
     Returns
     -------
     grid : object like :class:`matplotlib.gridspec.GridSpec`
-        The grid we will create axes in.
+        A grid for creating axes.
 
     """
     nrow = ceil(n_plots / ncol)
     grid = GridSpec(nrow, ncol)
     return grid
+
+
+def set_up_fig_and_axis(fig, axi):
+    """Create a figure and axis if needed.
+
+    Parameters
+    ----------
+    fig : object like :class:`matplotlib.figure.Figure`
+        The current figure. If None is given, we create a new one here.
+    axi : object like :class:`matplotlib.axes.Axes`
+        The current axis. If None is given, we create a new one here.
+
+    Returns
+    -------
+    fig : object like :class:`matplotlib.figure.Figure`
+        The figure created here, if any. If no figure was created,
+        this is just the figure we got as a parameter.
+    axi : object like :class:`matplotlib.axes.Axes`
+        The axis created here. If no axis was created, this is just
+        the figure we got as a parameter.
+
+    """
+    if axi is None:  # No axis, create one:
+        if fig is None:  # No figure, create axis and figure:
+            fig, axi = plt.subplots()
+        else:
+            try:
+                # Check if the figure contain some axes and use the
+                # first one:
+                axi = fig.axes[0]
+            except IndexError:
+                # Could not find axes. Create one:
+                axi = fig.add_subplot()
+    return fig, axi
 
 
 def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
@@ -105,19 +139,19 @@ def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
 
 
 def add_xy_line(axi, **kwargs):
-    """Add a x==y line to the given axes.
+    """Add a y=x line to the given axes.
 
     Parameters
     ----------
     axi : object like :class:`matplotlib.axes.Axes`
-        The axis to add the x==y line to.
+        The axis to add the y=x line to.
     **kwargs : dict, optional
         Additional arguments passed to the plotting method.
 
     Returns
     -------
     line : object like :class:`matplotlib.lines.Line2D`
-        The created line.
+        The created y=x line.
 
     """
     lim_min = np.min([axi.get_xlim(), axi.get_ylim()])
@@ -158,7 +192,7 @@ def add_trendline(axi, xdata, ydata, **kwargs):
 
 
 def get_rsquared(yval, yre):
-    """Obtain R^2 for fitted data.
+    """Obtain the coefficient of determination (R^2).
 
     Parameters
     ----------
@@ -184,7 +218,7 @@ def get_rsquared(yval, yre):
 
 
 def set_origin_axes(axi, xlabel, ylabel, **kwargs):
-    """Move the x/y-axes of a plot to the origin.
+    """Move the x and y-axes of a plot to the origin.
 
     Parameters
     ----------
@@ -222,12 +256,12 @@ def set_origin_axes(axi, xlabel, ylabel, **kwargs):
 
 
 def find_axis_intersection(axi, xcoeff, ycoeff):
-    """Find intersection between a line and the bounds of the axis.
+    """Find intersection between a line and the axis bounds.
 
     Parameters
     ----------
     axi : object like :class:`matplotlib.axes.Axes`
-        The plot to add the loadings to.
+        The axis we will find intersections in,
     xcoeff : float
         The x-value for the line we are to extend.
     ycoeff : float
@@ -259,22 +293,22 @@ def find_axis_intersection(axi, xcoeff, ycoeff):
             xend = xmax if xcoeff > 0 else xmin
             yend = 0
         else:
-            # Line 1)
+            # Possibility 1:
             yhat = ycoeff * xmin / xcoeff
             if ymin <= yhat <= ymax and direction(xmin, yhat):
                 xend = xmin
                 yend = yhat
-            # Line 2)
+            # Possibility 2:
             xhat = xcoeff * ymin / ycoeff
             if xmin <= xhat <= xmax and direction(xhat, ymin):
                 xend = xhat
                 yend = ymin
-            # Line 3)
+            # Possibility 3:
             yhat = ycoeff * xmax / xcoeff
             if ymin <= yhat <= ymax and direction(xmax, yhat):
                 xend = xmax
                 yend = yhat
-            # Line 4)
+            # Possibility 4:
             xhat = xcoeff * ymax / ycoeff
             if xmin <= xhat <= xmax and direction(xhat, ymax):
                 xend = xhat
@@ -283,7 +317,7 @@ def find_axis_intersection(axi, xcoeff, ycoeff):
 
 
 def _get_text_boxes(axi, texts):
-    """Create bounding boxes from texts.
+    """Get bounding boxes for the givens text elements.
 
     Parameters
     ----------
@@ -295,7 +329,7 @@ def _get_text_boxes(axi, texts):
     Returns
     -------
     boxes : list of objects like :class:`shapely.geometry.polygon.Polygon`
-        The polygons of bounding boxes.
+        Polygons representing the bounding boxes.
 
     """
     renderer = axi.figure.canvas.get_renderer()
