@@ -1,12 +1,17 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-PCA Scores (2D) with loadings
-=============================
+PCA Scores (2D) with loadings and a legend
+==========================================
 
 This example will plot PCA scores along two principal axes and
 also show the loadings. Here we show labels in a legend, rather
 than in the plot, to avoid making the plot too crowded.
+
+For better results, the parameter ``savefig`` can be used
+when calling meth:`.pca_2d_scores` to store the plot directly to a
+file. In this case, the plot is better adjusted to accompany all
+elements.
 """
 from matplotlib import pyplot as plt
 import pandas as pd

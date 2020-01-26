@@ -1,7 +1,7 @@
 .. _api-scatter:
 
-psynlig.scatter module
-----------------------
+psynlig.scatter
+---------------
 
 .. automodule:: psynlig.scatter
     :members:

@@ -1,7 +1,7 @@
 .. _api-version:
 
-psynlig.version module
-----------------------
+psynlig.version
+---------------
 
 .. automodule:: psynlig.version
     :members:

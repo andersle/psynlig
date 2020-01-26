@@ -1,7 +1,7 @@
 .. _api-heatmap:
 
-psynlig.heatmap module
-----------------------
+psynlig.heatmap
+---------------
 
 The :ref:`psynlig.heatmap <api-heatmap-source>` module defines
 methods for generaing a heat map to show

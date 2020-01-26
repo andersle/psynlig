@@ -1,7 +1,7 @@
 .. _api-common:
 
-psynlig.common module
----------------------
+psynlig.common
+--------------
 
 .. automodule:: psynlig.common
     :members:

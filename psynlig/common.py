@@ -393,3 +393,42 @@ def jiggle_text(axi, texts, maxiter=1000):
         # Add a white background to the text boxes:
         for txt in texts:
             txt.set_backgroundcolor('#ffffffe0')
+
+
+def get_selector(components, select_components, combi):
+    """Get a selector for components.
+
+    This is helper method in case we select a subset of
+    components, or wish to plot for all combinations.
+
+    Parameters
+    ----------
+    components : integer
+        The number of components we are selecting from,
+    select_components : iterable or None
+        The items we are to pick. If this is None, we select
+        all combinations.
+    combi : integer
+        The number of combinations of the components we
+        are selecting, in the case we are to generate them here.
+
+    Returns
+    -------
+    selector : generator
+        A generator which gives the indices for the components
+        we are to select.
+
+    """
+    if select_components is None:
+        if combi == 1:
+            selector = range(components)
+        else:
+            selector = combinations(range(components), combi)
+    else:
+        if combi == 1:
+            selector = (i - 1 for i in select_components)
+        else:
+            selector = (
+                (i - 1 for i in j) for j in select_components
+            )
+    return selector

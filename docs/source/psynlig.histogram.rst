@@ -1,7 +1,7 @@
 .. _api-histogram:
 
-psynlig.histogram module
-------------------------
+psynlig.histogram
+-----------------
 
 .. automodule:: psynlig.histogram
     :members:

@@ -1,7 +1,7 @@
 .. _api-colors:
 
-psynlig.colors module
----------------------
+psynlig.colors
+--------------
 
 .. automodule:: psynlig.colors
     :members:

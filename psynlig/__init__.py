@@ -16,16 +16,20 @@ from .scatter import (
     generate_scatter,
 )
 from .histogram import histograms, histogram2d
-from .pca import (
+from .pca.variance import (
     pca_scree,
     pca_explained_variance,
     pca_residual_variance,
     pca_explained_variance_bar,
     pca_explained_variance_pie,
+)
+from .pca.loadings import (
     pca_1d_loadings,
     pca_2d_loadings,
     pca_3d_loadings,
+    pca_loadings_map,
+)
+from .pca.scores import (
     pca_2d_scores,
     pca_1d_scores,
-    pca_loadings_map,
 )
