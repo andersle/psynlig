@@ -300,7 +300,7 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
                     color=color_class[classid],
                     **kwargs
                 )
-            patches, labels = create_scatter_legend(
+            create_scatter_legend(
                 axi, color_labels, class_names, show=True, **kwargs
             )
         axi.set_xlabel('Principal component {}'.format(idx1 + 1))
