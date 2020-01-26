@@ -17,6 +17,79 @@ from psynlig.scatter import create_scatter_legend
 from psynlig.pca.loadings import _pca_1d_loadings_component
 
 
+def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
+                  select_components=None, add_loadings=False, **kwargs):
+    """Plot scores from a PCA model (1D).
+
+    Parameters
+    ----------
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    scores : object like :class:`numpy.ndarray`
+        The scores we are to plot.
+    xvars : list of strings
+        Labels for the original variables.
+    class_data : object like :class:`pandas.core.series.Series`, optional
+        Class information for the points (if available).
+    class_names : dict of strings
+        A mapping from the class data to labels/names.
+    select_componets : set of tuples of integers, optional
+        This variable can be used to select the principal components
+        we will create plot for. Note that the principal component
+        numbering will here start from 1 (and not 0). If this is not
+        given, all will be plotted.
+    add_loadings : boolean, optional
+        If this is True, we will add loadings to the plot.
+    kwargs : dict, optional
+        Additional settings for the plotting.
+
+    """
+    components = pca.n_components_
+    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    selector = get_selector(components, select_components, 1)
+    colors = None
+    if xvars is not None:
+        colors = generate_colors(len(xvars))
+    for idx1 in selector:
+        if not add_loadings:
+            fig, axi = plt.subplots()
+            axl = None
+        else:
+            fig, (axi, axl) = plt.subplots(nrows=2, ncols=1)
+        if class_data is None:
+            axi.scatter(
+                scores[:, idx1],
+                np.zeros_like(scores[:, idx1]),
+                **kwargs
+            )
+        else:
+            for classid, idx in idx_class.items():
+                axi.scatter(
+                    scores[idx, idx1],
+                    np.zeros_like(scores[idx, idx1]),
+                    color=color_class[classid],
+                    **kwargs
+                )
+            create_scatter_legend(
+                axi, color_labels, class_names, show=True, **kwargs
+            )
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
+        for loc in ('left', 'right', 'top'):
+            axi.spines[loc].set_visible(False)
+        axi.get_yaxis().set_visible(False)
+        axi.spines['bottom'].set_position('zero')
+        if add_loadings:
+            _pca_1d_loadings_component(
+                axl,
+                pca.components_[idx1, :],
+                xvars,
+                colors,
+            )
+            maxx = max(np.abs(axi.get_xlim()))
+            axi.set_xlim(-maxx, maxx)
+        fig.tight_layout()
+
+
 def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
                            settings=None):
     """Add a loading line to a plot.
@@ -255,76 +328,3 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
                 bbox_extra_artists=extra_artists,
                 bbox_inches='tight',
             )
-
-
-def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
-                  select_components=None, add_loadings=False, **kwargs):
-    """Plot scores from a PCA model (1D).
-
-    Parameters
-    ----------
-    pca : object like :class:`sklearn.decomposition._pca.PCA`
-        The results from a PCA analysis.
-    scores : object like :class:`numpy.ndarray`
-        The scores we are to plot.
-    xvars : list of strings
-        Labels for the original variables.
-    class_data : object like :class:`pandas.core.series.Series`, optional
-        Class information for the points (if available).
-    class_names : dict of strings
-        A mapping from the class data to labels/names.
-    select_componets : set of tuples of integers, optional
-        This variable can be used to select the principal components
-        we will create plot for. Note that the principal component
-        numbering will here start from 1 (and not 0). If this is not
-        given, all will be plotted.
-    add_loadings : boolean, optional
-        If this is True, we will add loadings to the plot.
-    kwargs : dict, optional
-        Additional settings for the plotting.
-
-    """
-    components = pca.n_components_
-    color_class, color_labels, idx_class = generate_class_colors(class_data)
-    selector = get_selector(components, select_components, 1)
-    colors = None
-    if xvars is not None:
-        colors = generate_colors(len(xvars))
-    for idx1 in selector:
-        if not add_loadings:
-            fig, axi = plt.subplots()
-            axl = None
-        else:
-            fig, (axi, axl) = plt.subplots(nrows=2, ncols=1)
-        if class_data is None:
-            axi.scatter(
-                scores[:, idx1],
-                np.zeros_like(scores[:, idx1]),
-                **kwargs
-            )
-        else:
-            for classid, idx in idx_class.items():
-                axi.scatter(
-                    scores[idx, idx1],
-                    np.zeros_like(scores[idx, idx1]),
-                    color=color_class[classid],
-                    **kwargs
-                )
-            create_scatter_legend(
-                axi, color_labels, class_names, show=True, **kwargs
-            )
-        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
-        for loc in ('left', 'right', 'top'):
-            axi.spines[loc].set_visible(False)
-        axi.get_yaxis().set_visible(False)
-        axi.spines['bottom'].set_position('zero')
-        if add_loadings:
-            _pca_1d_loadings_component(
-                axl,
-                pca.components_[idx1, :],
-                xvars,
-                colors,
-            )
-            maxx = max(np.abs(axi.get_xlim()))
-            axi.set_xlim(-maxx, maxx)
-        fig.tight_layout()
