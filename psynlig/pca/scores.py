@@ -14,6 +14,7 @@ from psynlig.common import (
     get_selector,
 )
 from psynlig.scatter import create_scatter_legend
+from psynlig.pca.loadings import _pca_1d_loadings_component
 
 
 def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
@@ -215,7 +216,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
                     color=color_class[classid],
                     **kwargs
                 )
-            patches, labels = create_scatter_legend(
+            create_scatter_legend(
                 axi, color_labels, class_names, show=True, **kwargs
             )
         axi.set_xlabel('Principal component {}'.format(idx1 + 1))
@@ -257,7 +258,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
 
 
 def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
-                  select_components=None, **kwargs):
+                  select_components=None, add_loadings=False, **kwargs):
     """Plot scores from a PCA model (1D).
 
     Parameters
@@ -277,6 +278,8 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
         we will create plot for. Note that the principal component
         numbering will here start from 1 (and not 0). If this is not
         given, all will be plotted.
+    add_loadings : boolean, optional
+        If this is True, we will add loadings to the plot.
     kwargs : dict, optional
         Additional settings for the plotting.
 
@@ -284,8 +287,13 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
     components = pca.n_components_
     color_class, color_labels, idx_class = generate_class_colors(class_data)
     selector = get_selector(components, select_components, 1)
+    colors = generate_colors(len(xvars))
     for idx1 in selector:
-        fig, axi = plt.subplots()
+        if not add_loadings:
+            fig, axi = plt.subplots()
+            axl = None
+        else:
+            fig, (axi, axl) = plt.subplots(nrows=2, ncols=1)
         if class_data is None:
             axi.scatter(
                 scores[:, idx1],
@@ -308,4 +316,13 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
             axi.spines[loc].set_visible(False)
         axi.get_yaxis().set_visible(False)
         axi.spines['bottom'].set_position('zero')
+        if add_loadings:
+            _pca_1d_loadings_component(
+                axl,
+                pca.components_[idx1, :],
+                xvars,
+                colors,
+            )
+            maxx = max(np.abs(axi.get_xlim()))
+            axi.set_xlim(-maxx, maxx)
         fig.tight_layout()
