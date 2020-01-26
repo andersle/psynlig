@@ -30,6 +30,7 @@ from .pca.loadings import (
     pca_loadings_map,
 )
 from .pca.scores import (
-    pca_2d_scores,
     pca_1d_scores,
+    pca_2d_scores,
+    pca_3d_scores,
 )

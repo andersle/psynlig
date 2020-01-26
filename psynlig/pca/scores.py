@@ -328,3 +328,60 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
                 bbox_extra_artists=extra_artists,
                 bbox_inches='tight',
             )
+
+
+def pca_3d_scores(pca, scores, class_data=None, class_names=None,
+                  select_components=None, **kwargs):
+    """Plot scores from a PCA model anlong two PC's.
+
+    Parameters
+    ----------
+    pca : object like :class:`sklearn.decomposition._pca.PCA`
+        The results from a PCA analysis.
+    scores : object like :class:`numpy.ndarray`
+        The scores we are to plot.
+    class_data : object like :class:`pandas.core.series.Series`, optional
+        Class information for the points (if available).
+    class_names : dict of strings
+        A mapping from the class data to labels/names.
+    select_componets : set of tuples of integers, optional
+        This variable can be used to select the principal components
+        we will create plot for. Note that the principal component
+        numbering will here start from 1 (and not 0). If this is not
+        given, all will be plotted.
+    kwargs : dict, optional
+        Additional settings for the plotting.
+
+    """
+    components = pca.n_components_
+    if components < 3:
+        raise ValueError('Too few (< 3) principal components for a 3D plot!')
+    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    selector = get_selector(components, select_components, 3)
+    for idx1, idx2, idx3 in selector:
+        fig = plt.figure()
+        axi = fig.add_subplot(111, projection='3d')
+
+        if class_data is None:
+            axi.scatter(
+                scores[:, idx1],
+                scores[:, idx2],
+                scores[:, idx3],
+                **kwargs
+            )
+        else:
+            for classid, idx in idx_class.items():
+                axi.scatter(
+                    scores[idx, idx1],
+                    scores[idx, idx2],
+                    scores[idx, idx3],
+                    color=color_class[classid],
+                    **kwargs
+                )
+            create_scatter_legend(
+                axi, color_labels, class_names, show=True, **kwargs
+            )
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1), labelpad=15)
+        axi.set_ylabel('Principal component {}'.format(idx2 + 1), labelpad=15)
+        axi.set_zlabel('Principal component {}'.format(idx3 + 1), labelpad=15)
+        fig.tight_layout()
