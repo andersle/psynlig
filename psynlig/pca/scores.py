@@ -287,7 +287,9 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
     components = pca.n_components_
     color_class, color_labels, idx_class = generate_class_colors(class_data)
     selector = get_selector(components, select_components, 1)
-    colors = generate_colors(len(xvars))
+    colors = None
+    if xvars is not None:
+        colors = generate_colors(len(xvars))
     for idx1 in selector:
         if not add_loadings:
             fig, axi = plt.subplots()
