@@ -4,7 +4,8 @@ r"""
 Generating 2D scatter plots
 ===========================
 
-This example uses the method :py:meth:`psynlig.scatter.generate_scatter`
+This example uses the method
+:py:meth:`psynlig.scatter.generate_2d_scatter`
 for generating a set of 2D scatter plots of combinations of variables.
 This is intended for investigating possible correlations visually
 between pairs of variables.
@@ -27,7 +28,7 @@ is also shown (:math:`\rho`).
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
-from psynlig import generate_scatter
+from psynlig import generate_2d_scatter
 plt.style.use('seaborn-talk')
 
 
@@ -39,7 +40,17 @@ class_names = dict(enumerate(data_set['target_names']))
 variables = ['sepal length (cm)', 'sepal width (cm)',
              'petal length (cm)', 'petal width (cm)']
 
-generate_scatter(data, variables, class_names=class_names,
-                 class_data=class_data, marker='o', s=200, alpha=0.7)
+generate_2d_scatter(
+    data,
+    variables,
+    class_names=class_names,
+    class_data=class_data,
+    show_legend=True,
+    xy_line=True,
+    trendline=True,
+    marker='o',
+    s=200,
+    alpha=0.7
+)
 
 plt.show()

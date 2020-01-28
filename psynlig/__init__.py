@@ -10,10 +10,11 @@ from .heatmap import (
     plot_annotated_heatmap,
 )
 from .scatter import (
-    plot_3d_scatter,
+    generate_1d_scatter,
+    generate_2d_scatter,
     generate_3d_scatter,
+    plot_3d_scatter,
     plot_scatter,
-    generate_scatter,
 )
 from .histogram import histograms, histogram2d
 from .pca.variance import (

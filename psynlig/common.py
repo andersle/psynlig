@@ -432,3 +432,34 @@ def get_selector(components, select_components, combi):
                 (i - 1 for i in j) for j in select_components
             )
     return selector
+
+
+def iqr_outlier(data, variables):
+    """Locate outliers by computing the interquartile range.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    out_of_bounds : object like :class:`pandas.core.frame.DataFrame`
+    outliers : dict of integer
+        For each variable, these are the indexes of possible outliers.
+    (upper, lower) : tuple of objects like :class:`pandas.core.series.Series`
+        These are the bounds for outlier detection.
+
+    """
+    sub_data = data[variables]
+    quant1 = sub_data.quantile(0.25)
+    quant3 = sub_data.quantile(0.75)
+    iqr = quant3 - quant1
+    lower = quant1 - 1.5 * iqr
+    upper = quant3 + 1.5 * iqr
+    out_of_bounds = (
+        (sub_data[variables] < lower) | (sub_data[variables] > upper)
+    )
+    # Convert to indexes to help with 1D plotting:
+    outliers = {}
+    for vari in variables:
+        outliers[vari] = out_of_bounds[out_of_bounds[vari]].index.values
+    return out_of_bounds, outliers, (upper, lower)

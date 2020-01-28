@@ -236,9 +236,7 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
     if show_scatter:
         plot_scatter(
             data, xvar, yvar, axi=axi, class_data=class_data,
-            class_names=class_names, show_legend=False,
-            xy_line=False,
-            trendline=False,
+            class_names=class_names,
             **kwargs.get('scatter', {})
         )
     if show_contour:
