@@ -3,16 +3,15 @@
 """A module for generating histograms plots of variables."""
 import copy
 from matplotlib import pyplot as plt
-from matplotlib.gridspec import GridSpec
 from matplotlib import rcParams
 import numpy as np
 from .colors import generate_class_colors
-from .common import create_fig_and_axes
+from .common import create_fig_and_axes, get_figure_kwargs
 from .scatter import plot_scatter
 
 
 def histograms(data, variables, class_data=None, class_names=None,
-               max_plots=6, ncol=3, sharex=False, sharey=False, **kwargs):
+               nrows=None, ncols=None, sharex=False, sharey=False, **kwargs):
     """Generate histogram(s) from the given data.
 
     Parameters
@@ -25,9 +24,10 @@ def histograms(data, variables, class_data=None, class_names=None,
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
-    max_plots : integer, optional
-        Maximum number of plots to keep in one figure.
-    ncol : integer, optional
+    nrows : integer, optional
+        Number of rows to use when plotting several histograms
+        in the same figure.
+    ncols : integer, optional
         Number of columns to use when plotting several histograms
         in the same figure.
     sharex : boolean, optional
@@ -48,10 +48,11 @@ def histograms(data, variables, class_data=None, class_names=None,
     nplots = len(variables)
     figures, axes = create_fig_and_axes(
         nplots,
-        max_plots,
-        ncol=ncol,
+        nrows=nrows,
+        ncols=ncols,
         sharex=sharex,
-        sharey=sharey
+        sharey=sharey,
+        **kwargs,
     )
     fig = None
     for i, xvar in enumerate(variables):
@@ -61,14 +62,11 @@ def histograms(data, variables, class_data=None, class_names=None,
             xvar,
             class_data=class_data,
             class_names=class_names,
-            **kwargs
+            **kwargs.get('histogram1d', {}),
         )
         if axes[i].figure != fig:
             fig = axes[i].figure
             axes[i].legend()
-    for fig in figures:
-        fig.tight_layout()
-        fig.tight_layout()
     return figures, axes
 
 
@@ -102,7 +100,7 @@ def histogram1d(axi, data, variable, class_data=None, class_names=None,
                 data[variable][idx],
                 color=color_class[class_id],
                 label=class_names[class_id],
-                **kwargs
+                **kwargs,
             )
 
 
@@ -220,10 +218,11 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
         * ``contour`` with settings for the contour plot.
 
     """
-    fig = plt.figure()
-    grid = GridSpec(4, 4)
+    fig_kw = get_figure_kwargs(kwargs)
+    fig = plt.figure(**fig_kw)
+    grid = fig.add_gridspec(4, 4)
     ax_l = fig.add_subplot(grid[0, -1])
-    ax_l.set_axis_off()
+    ax_l.axis('off')
     ax_x = fig.add_subplot(grid[0, :-1])
     ax_y = fig.add_subplot(grid[1:, -1])
     axi = fig.add_subplot(grid[1:, :-1])
@@ -278,4 +277,3 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
     if class_data is not None:
         handles, labels = ax_x.get_legend_handles_labels()
         ax_l.legend(handles, labels)
-    fig.tight_layout()

@@ -5,7 +5,6 @@ import copy
 from itertools import combinations
 from math import ceil
 from matplotlib import pyplot as plt
-from matplotlib.gridspec import GridSpec
 import numpy as np
 from numpy.linalg import norm
 from scipy.stats import pearsonr
@@ -26,25 +25,34 @@ MARKERS = {
 }
 
 
-def create_grid(n_plots, ncol):
-    """Create a grid for axes given a number of plots and columns.
+GRID = {
+    1: (1, 1),
+    2: (1, 2),
+    3: (1, 3),
+    4: (2, 2),
+    5: (2, 3),
+    6: (3, 2),
+    7: (3, 3),
+    8: (2, 4),
+    9: (3, 3),
+    10: (2, 5),
+    11: (3, 4),
+    12: (3, 4),
+}
 
-    Parameters
-    ----------
-    nplots : integer
-        The total number of plots to create.
-    ncol : integer
-        The number of columns to create.
 
-    Returns
-    -------
-    grid : object like :class:`matplotlib.gridspec.GridSpec`
-        A grid for creating axes.
+DEFAULT_FIGURE = {
+    'constrained_layout': True,
+}
 
-    """
-    nrow = ceil(n_plots / ncol)
-    grid = GridSpec(nrow, ncol)
-    return grid
+
+def get_figure_kwargs(kwargs):
+    """Helper method to process figure kwargs."""
+    fig_kw = copy.deepcopy(kwargs.get('figure', {}))
+    for key, val in DEFAULT_FIGURE.items():
+        if key not in fig_kw:
+            fig_kw[key] = val
+    return fig_kw
 
 
 def set_up_fig_and_axis(fig, axi):
@@ -81,24 +89,23 @@ def set_up_fig_and_axis(fig, axi):
     return fig, axi
 
 
-def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
+def create_fig_and_axes(nplots, nrows=None, ncols=None, **kwargs):
     """Create a set of figures and axes.
 
-    The number of plots per figure is limited to the given parameter
-    ``max_plots``.
+    The number of plots per figure is limited by the specified rows
+    and columns. The plots will be created with constrained layout unless
+    this is explicitly set to False.
 
     Parameters
     ----------
     nplots : integer
         The total number of plots to make.
-    max_plots : integer
-        The maximum number of plots in a figure.
-    ncol : integer
+    nrows : integer
+        The number of rows to create in each plot.
+    ncols : integer
         The number of columns to create in each plot.
-    sharex : boolean
-        If True, the axes will share the x-axis.
-    sharey : boolean
-        If True, the axes will share the y-axis.
+    kwargs : dict
+        Extra settings for creating the figure(s).
 
     Returns
     -------
@@ -110,31 +117,24 @@ def create_fig_and_axes(nplots, max_plots, ncol=3, sharex=False, sharey=False):
     """
     figures, axes = [], []
     nfigures = 1
+    if nrows is None or ncols is None:
+        nrows, ncols = GRID.get(nplots, (4, 4))
+    max_plots = nrows * ncols
     if nplots > max_plots:
         nfigures = ceil(nplots / max_plots)
+    # Add constrained layout as default if it is not explicitly set
+    # to false:
+    fig_kw = get_figure_kwargs(kwargs)
     for _ in range(nfigures):
-        plots = max_plots if nplots > max_plots else nplots
-        grid = create_grid(plots, ncol)
-        nplots -= plots
-        figi = plt.figure()
+        # We make the same number of figures per plot as this
+        # gives the same size.
+        figi, axi = plt.subplots(nrows=nrows, ncols=ncols, **fig_kw)
         figures.append(figi)
-        ax0 = None
-        for j in range(plots):
-            row, col = divmod(j, ncol)
-            if ax0 is None:
-                ax0 = axi = figi.add_subplot(grid[row, col])
-            else:
-                if sharex and sharey:
-                    axi = figi.add_subplot(grid[row, col],
-                                           sharex=ax0, sharey=ax0)
-                else:
-                    if sharex:
-                        axi = figi.add_subplot(grid[row, col], sharex=ax0)
-                    elif sharey:
-                        axi = figi.add_subplot(grid[row, col], sharey=ax0)
-                    else:
-                        axi = figi.add_subplot(grid[row, col])
-            axes.append(axi)
+        axes.extend(axi.flatten())
+    # Hide axis if we created some extra ones:
+    for i, axi in enumerate(axes):
+        if i >= nplots:
+            axi.axis('off')
     return figures, axes
 
 

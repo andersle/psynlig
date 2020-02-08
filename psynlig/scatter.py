@@ -2,7 +2,6 @@
 # Distributed under the MIT License. See LICENSE for more info.
 """A module for generating scatter plots of variables."""
 from itertools import combinations
-import pprint
 import warnings
 import numpy as np
 from matplotlib import pyplot as plt
@@ -10,10 +9,11 @@ from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 from scipy.special import comb
 from .colors import generate_class_colors
 from .common import (
-    create_fig_and_axes,
     add_xy_line,
     add_trendline,
+    create_fig_and_axes,
     iqr_outlier,
+    get_figure_kwargs,
 )
 
 
@@ -106,7 +106,8 @@ def plot_scatter(data, xvar, yvar, axi=None,
     color_class, color_labels, idx_class = generate_class_colors(class_data)
     fig = None
     if axi is None:
-        fig, axi = plt.subplots()
+        fig_kw = get_figure_kwargs(kwargs)
+        fig, axi = plt.subplots(**fig_kw)
     if xvar is None:
         axi.set(xlabel='Data point no.', ylabel=yvar)
         xdata = np.arange(len(data[yvar]))
@@ -116,27 +117,31 @@ def plot_scatter(data, xvar, yvar, axi=None,
     ydata = data[yvar]
 
     if class_data is None:
-        axi.scatter(xdata, ydata, **kwargs)
+        axi.scatter(xdata, ydata, **kwargs.get('scatter', {}))
     else:
         for class_id, idx in idx_class.items():
             axi.scatter(
                 xdata[idx],
                 ydata[idx],
                 color=color_class[class_id],
-                **kwargs
+                **kwargs.get('scatter', {}),
             )
         patches, labels = create_scatter_legend(
-            axi, color_labels, class_names, **kwargs
+            axi, color_labels, class_names, **kwargs.get('scatter', {}),
         )
     if highlight is not None:
-        axi.scatter(xdata[highlight], ydata[highlight], marker='X')
-    if fig is not None:
-        fig.tight_layout()
+        scat = axi.scatter(
+            xdata[highlight],
+            ydata[highlight],
+            **kwargs.get('scatter-outlier', {}),
+        )
+        patches.append(scat)
+        labels.append(scat.get_label())
     return fig, axi, patches, labels
 
 
 def generate_1d_scatter(data, variables, class_data=None, class_names=None,
-                        max_plots=6, ncol=3, sharex=False, sharey=False,
+                        nrows=None, ncols=None, sharex=False, sharey=False,
                         show_legend=True, outliers=False,
                         **kwargs):
     """Generate 1D scatter plots from the given data and variables.
@@ -151,9 +156,9 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
-    max_plots : integer, optional
-        The maximum number of plots in a figure.
-    ncol : integer, optional
+    nrows : integer, optional
+        The number of rows to use in a figure.
+    ncols : integer, optional
         The number of columns to use in a figure.
     sharex : boolean, optional
         If True, the scatter plots will share the x-axis.
@@ -176,7 +181,8 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
     """
     nplots = len(variables)
     figures, axes = create_fig_and_axes(
-        nplots, max_plots, ncol=ncol, sharex=sharex, sharey=sharey
+        nplots, nrows=nrows, ncols=ncols, sharex=sharex, sharey=sharey,
+        **kwargs,
     )
 
     outlier_points = {}
@@ -194,9 +200,6 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
 
         if outliers:
             highlight = outlier_points.get(yvar, None)
-            if highlight is not None:
-                print('Possible outliers for "{}":'.format(yvar))
-                pprint.pprint(highlight)
 
         _, _, patches, labels = plot_scatter(
             data,
@@ -206,7 +209,7 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
             class_data=class_data,
             class_names=class_names,
             highlight=highlight,
-            **kwargs
+            **kwargs,
         )
         if outliers:
             lower = bounds[0].get(yvar, None)
@@ -218,13 +221,11 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
 
         if show_legend and patches and labels:
             axes[i].legend(patches, labels)
-    for figi in figures:
-        figi.tight_layout()
-    return figures, axes
+    return figures, axes, outlier_points
 
 
 def generate_2d_scatter(data, variables, class_data=None, class_names=None,
-                        max_plots=6, ncol=3, sharex=False, sharey=False,
+                        nrows=None, ncols=None, sharex=False, sharey=False,
                         show_legend=True, xy_line=False, trendline=False,
                         **kwargs):
     """Generate 2D scatter plots from the given data and variables.
@@ -242,9 +243,9 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
-    max_plots : integer, optional
-        The maximum number of plots in a figure.
-    ncol : integer, optional
+    nrows : integer, optional
+        The number of rows to use in a figure.
+    ncols : integer, optional
         The number of columns to use in a figure.
     sharex : boolean, optional
         If True, the scatter plots will share the x-axis.
@@ -269,7 +270,8 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
     """
     nplots = comb(len(variables), 2, exact=True)
     figures, axes = create_fig_and_axes(
-        nplots, max_plots, ncol=ncol, sharex=sharex, sharey=sharey
+        nplots, nrows=nrows, ncols=ncols, sharex=sharex, sharey=sharey,
+        **kwargs,
     )
     fig = None
     for i, (xvar, yvar) in enumerate(combinations(variables, 2)):
@@ -285,7 +287,7 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
             axi=axes[i],
             class_data=class_data,
             class_names=class_names,
-            **kwargs
+            **kwargs,
         )
         if xy_line:
             line_xy = add_xy_line(axes[i], alpha=0.7, color='black')
@@ -298,8 +300,6 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
             labels.append('y = a + bx')
         if show_legend and show_legend_ax and patches and labels:
             axes[i].legend(patches, labels)
-    for figi in figures:
-        figi.tight_layout()
     return figures, axes
 
 

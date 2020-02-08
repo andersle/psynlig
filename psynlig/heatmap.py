@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 from matplotlib.patches import Circle, Rectangle
 import numpy as np
-from .common import set_up_fig_and_axis
+from .common import set_up_fig_and_axis, get_figure_kwargs
 
 
 def create_bubbles(data, img, axi):
@@ -268,7 +268,8 @@ def plot_annotated_heatmap(data, row_labels, col_labels, cbarlabel='',
         The axis to which the heat map is added.
 
     """
-    fig1, ax1 = plt.subplots()
+    fig_kw = get_figure_kwargs(kwargs)
+    fig1, ax1 = plt.subplots(**fig_kw)
     _, _, img, _ = heatmap(
         data,
         row_labels,
@@ -285,5 +286,4 @@ def plot_annotated_heatmap(data, row_labels, col_labels, cbarlabel='',
             textcolors=textcolors,
             **kwargs.get('text', {}),
         )
-    fig1.tight_layout()
     return fig1, ax1
