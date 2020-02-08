@@ -27,26 +27,29 @@ class_names = dict(enumerate(data_set['target_names']))
 variables = ['sepal length (cm)', 'sepal width (cm)',
              'petal length (cm)', 'petal width (cm)']
 
+
+kwargs = {
+    'scatter': {
+        'marker': 'o',
+        's': 200,
+        'alpha': 0.7,
+    },
+}
+
 generate_1d_scatter(
     data,
     variables,
     class_names=class_names,
     class_data=class_data,
-    ncol=2,
     show_legend=True,
-    marker='o',
-    s=200,
-    alpha=0.7
+    **kwargs,
 )
 
 generate_1d_scatter(
     data,
     variables,
-    ncol=2,
     show_legend=True,
-    marker='o',
-    s=200,
-    alpha=0.7
+    **kwargs,
 )
 
 plt.show()

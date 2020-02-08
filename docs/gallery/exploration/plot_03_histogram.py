@@ -32,8 +32,23 @@ class_names = dict(enumerate(data_set['target_names']))
 variables = ['sepal length (cm)', 'sepal width (cm)',
              'petal length (cm)', 'petal width (cm)']
 
-histograms(data, variables, class_names=class_names,
-           class_data=class_data, ncol=2, max_plots=4,
-           edgecolor='black', alpha=0.8, bins=10, density=True)
+
+kwargs = {
+    'histogram1d': {
+        'alpha': 0.8,
+        'edgecolor': 'black',
+        'bins': 10,
+        'density': True
+    },
+}
+
+
+histograms(
+    data,
+    variables,
+    class_names=class_names,
+    class_data=class_data,
+    **kwargs,
+)
 
 plt.show()

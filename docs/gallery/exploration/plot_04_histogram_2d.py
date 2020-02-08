@@ -4,12 +4,16 @@
 Generating histograms (2D)
 ==========================
 
+This will generate at 2D histogram of the selected variables and
+also display the two corresponding 1D histograms.
+
 """
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
 from psynlig import histogram2d
-plt.style.use('seaborn')
+plt.style.use('seaborn-dark')
+plt.rcParams.update({'font.size': 14})
 
 
 data_set = load_breast_cancer()
@@ -40,6 +44,9 @@ kwargs = {
     'contour': {
         'alpha': 0.6,
         'cmap': 'viridis',
+    },
+    'figure': {
+        'figsize': (12, 8),
     },
 }
 
