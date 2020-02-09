@@ -248,7 +248,7 @@ def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars, cmap=None,
         * ``add_text``: If this is True, we will annotate the plot with
           labels for the variables.
 
-        * ``text``: Additional settings for th text.
+        * ``text``: Additional settings for the text.
 
     Returns
     -------
