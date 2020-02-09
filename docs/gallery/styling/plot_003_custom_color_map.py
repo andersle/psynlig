@@ -1,8 +1,8 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-Using a custom color map
-========================
+Using custom color maps
+=======================
 
 This example will show how custom color maps can be used for
 generating colors.
@@ -70,13 +70,7 @@ dompap = ListedColormap(
     name='dompap',
 )
 
-_, axi = pca_explained_variance_pie(pca, cmap=colorbrewer)
-axi.set_title('Using a custom color map')
-
-pca_1d_loadings(pca, data_set['feature_names'], select_components={1,},
-                cmap=bold)
-
-pca_2d_scores(
+figures, axes = pca_2d_scores(
     pca,
     scores,
     class_data=class_data,
@@ -86,7 +80,16 @@ pca_2d_scores(
     alpha=.8,
     cmap_class=dompap,
 )
+axes[0].set_title('Using the "dompap" color map:')
+figures[0].tight_layout()
 
+_, axi = pca_explained_variance_pie(pca, cmap=colorbrewer)
+axi.set_title('Using a colorbrewer color map:')
 
+_, axes = pca_1d_loadings(
+    pca, data_set['feature_names'], select_components={1,}, cmap=bold,
+    text_settings={'weight': 'bold', 'fontsize': 'x-large'}
+)
+axes[0].set_title('Loadings with the "bold" color map:')
 
 plt.show()
