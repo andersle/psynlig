@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 from scipy.special import comb
-from .colors import generate_class_colors
+from .colors import generate_class_colors, generate_colors
 from .common import (
     add_xy_line,
     add_trendline,
@@ -444,3 +444,250 @@ def generate_3d_scatter(data, variables, class_data=None, class_names=None,
         figures.append(figi)
         axes.append(axi)
     return figures, axes
+
+
+def scatter_1d_flat(data, class_data=None, class_names=None, scaler=None,
+                    add_average=False, add_lines=False,
+                    cmap_lines=None, cmap_class=None, split_class=False,
+                    scatter_settings=None, line_settings=None):
+    """Make a flat plot of several variables.
+
+    Here, the points on the x-axis are the variables, while
+    the y-values are points for each data series.
+
+    Parameters
+    ----------
+    data : object like :class:`pandas.core.frame.DataFrame`
+        The data we are plotting.
+    class_data : object like :class:`pandas.core.series.Series`, optional
+        Class information for the points (if available).
+    class_names : dict of strings
+        A mapping from the class data to labels/names.
+    scaler : callable, optional
+        A function that can be used to scale the variables.
+    add_average : boolean, optional
+        If True, we will show the averages for each variable.
+    add_lines : boolean, optional
+        If True, we will show lines for each "measurement".
+    cmap_lines : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for lines.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
+    split_class : boolean, optional
+        If True, the plot with class information will be split into
+        one plot for each class.
+    scatter_settings : dict, optional
+        Additional settings for the scatter plot.
+    line_settings : dict, optional
+        Additional settings for plotting lines.
+
+    Returns
+    -------
+    figures : objects like :class:`matplotlib.figure.Figure`
+        The figure created here.
+    axes : object(s) like :class:`matplotlib.axes.Axes`
+        The axes created here.
+
+    """
+    if class_data is None:
+        return _scatter_1d_flat_no_class(data, scaler=scaler,
+                                         add_average=add_average,
+                                         add_lines=add_lines,
+                                         cmap_lines=cmap_lines,
+                                         line_settings=line_settings,
+                                         scatter_settings=scatter_settings)
+    return _scatter_1d_flat_class(data, class_data,
+                                  split_class=split_class,
+                                  class_names=class_names,
+                                  scaler=scaler,
+                                  cmap_class=cmap_class,
+                                  add_lines=add_lines,
+                                  add_average=add_average,
+                                  line_settings=line_settings,
+                                  scatter_settings=scatter_settings)
+
+
+def _get_settings_if_empty(settings):
+    """Get settings if None are given."""
+    if settings is None:
+        return {}
+    return settings
+
+
+def _scatter_1d_flat_no_class(data, scaler=None, add_average=False,
+                              add_lines=False, cmap_lines=None,
+                              scatter_settings=None,
+                              line_settings=None):
+    """Make a flat plot of several variables.
+
+    Here, the points on the x-axis are the variables, while
+    the y-values are points for each data series.
+
+    Parameters
+    ----------
+    data : object like :class:`pandas.core.frame.DataFrame`
+        The data we are plotting.
+    scaler : callable, optional
+        A function that can be used to scale the variables.
+    add_average : boolean, optional
+        If True, we will show the averages for each variable.
+    add_lines : boolean, optional
+        If True, we will show lines for each "measurement".
+    cmap_lines : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for lines.
+    scatter_settings : dict, optional
+        Additional settings for the scatter plot.
+    line_settings : dict, optional
+        Additional settings for plotting lines.
+
+    Returns
+    -------
+    fig : object like :class:`matplotlib.figure.Figure`
+        The figure containing the plot.
+    axi : object like :class:`matplotlib.axes.Axes`
+        The axis containing the plot.
+
+    """
+    fig, axi = plt.subplots(constrained_layout=True)
+    variables = data.columns
+    axi.set_xticks(range(len(variables)))
+    axi.set_xticklabels(variables, rotation='vertical')
+    yvalues = []
+    xvalues = []
+    if scaler is not None:
+        axi.set_ylabel('Scaled values')
+    else:
+        axi.set_ylabel('Values')
+    for i, variable in enumerate(variables):
+        yval = data[variable]
+        if scaler is not None:
+            yval = scaler(yval)
+        yvalues.append(yval)
+        xvalues.append(np.full_like(yval, i))
+    yvalues = np.array(yvalues)
+    xvalues = np.array(xvalues)
+
+    line_kw = _get_settings_if_empty(line_settings)
+
+    if add_lines:
+        colors = generate_colors(len(yvalues[0, :]), cmap=cmap_lines)
+        lines = axi.plot(xvalues, yvalues, zorder=1, **line_kw)
+        for line, color in zip(lines, colors):
+            line.set_color(color)
+
+    scatter_kw = _get_settings_if_empty(scatter_settings)
+    axi.scatter(xvalues, yvalues, zorder=2, **scatter_kw)
+    if add_average:
+        avg = np.average(yvalues, axis=1)
+        scat = axi.scatter(range(len(avg)), avg, zorder=3, marker='X')
+        axi.plot(range(len(avg)), avg, color=scat.get_facecolors()[0])
+    return fig, axi
+
+
+def _scatter_1d_flat_class(data, class_data, class_names=None,
+                           scaler=None,
+                           add_lines=False, add_average=False,
+                           cmap_class=None, split_class=False,
+                           scatter_settings=None,
+                           line_settings=None):
+    """Make a flat plot of several variables.
+
+    Here, the points on the x-axis are the variables, while
+    the y-values are points for each data series.
+    The class information is used for coloring.
+
+    Parameters
+    ----------
+    data : object like :class:`pandas.core.frame.DataFrame`
+        The data we are plotting.
+    class_data : object like :class:`pandas.core.series.Series`, optional
+        Class information for the points (if available).
+    class_names : dict of strings
+        A mapping from the class data to labels/names.
+    scalar : callable, optional
+        A function that can be used to scale the variables.
+    add_average : boolean, optional
+        If True, we will show the averages for each variable.
+    add_lines : boolean, optional
+        If True, we will show lines for each "measurement".
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
+    split_class : boolean, optional
+        If True, the plot with class information will be split into
+        one plot for each class.
+    scatter_settings : dict, optional
+        Additional settings for the scatter plot.
+    line_settings : dict, optional
+        Additional settings for plotting lines.
+
+    Returns
+    -------
+    figures : objects like :class:`matplotlib.figure.Figure`
+        The figure created here.
+    axes : object(s) like :class:`matplotlib.axes.Axes`
+        The axes created here.
+
+    """
+    color_class, color_labels, idx_class = generate_class_colors(
+        class_data, cmap=cmap_class
+    )
+
+    if split_class:
+        fig, axes = plt.subplots(
+            nrows=1, ncols=len(idx_class), constrained_layout=True,
+            sharex=True, sharey=True,
+        )
+        all_axes = axes.flatten()
+        axes = {class_id: all_axes[i] for i, class_id in enumerate(idx_class)}
+    else:
+        fig, axi = plt.subplots(constrained_layout=True)
+        all_axes = [axi]
+        axes = {class_id: axi for class_id in idx_class}
+
+    variables = data.columns
+    for _, axi in axes.items():
+        axi.set_xticks(range(len(variables)))
+        axi.set_xticklabels(variables, rotation='vertical')
+    yvalues = {i: [] for i in idx_class}
+    xvalues = {i: [] for i in idx_class}
+    for i, variable in enumerate(variables):
+        yval = data[variable]
+        if scaler is not None:
+            yval = scaler(yval)
+        for class_id, idx in idx_class.items():
+            yvali = yval[idx]
+            xpos = np.full_like(yvali, i)
+            yvalues[class_id].append(yvali)
+            xvalues[class_id].append(xpos)
+
+    line_kw = _get_settings_if_empty(line_settings)
+    if add_lines:
+        for class_id in idx_class:
+            axes[class_id].plot(
+                xvalues[class_id],
+                yvalues[class_id],
+                color=color_class[class_id],
+                zorder=1,
+                **line_kw,
+            )
+
+    scatter_kw = _get_settings_if_empty(scatter_settings)
+    for class_id in idx_class:
+        axes[class_id].scatter(
+            xvalues[class_id],
+            yvalues[class_id],
+            color=color_class[class_id],
+            zorder=2,
+            **scatter_kw,
+        )
+    if add_average:
+        for class_id in idx_class:
+            avg = np.average(yvalues[class_id], axis=1)
+            axes[class_id].scatter(
+                range(len(avg)), avg, zorder=3, marker='X', color=color_class[class_id],
+                edgecolor='black',
+            )
+    create_scatter_legend(
+        all_axes[0], color_labels, class_names, show=True, **scatter_kw
+    )
+    return fig, all_axes

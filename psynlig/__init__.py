@@ -15,6 +15,7 @@ from .scatter import (
     generate_3d_scatter,
     plot_3d_scatter,
     plot_scatter,
+    scatter_1d_flat,
 )
 from .histogram import histograms, histogram2d
 from .pca.variance import (
