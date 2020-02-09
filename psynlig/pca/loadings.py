@@ -55,8 +55,8 @@ def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
     colors = generate_colors(len(xvars))
     selector = get_selector(components, select_components, 1)
     for i in selector:
-        fig, axi = plt.subplots()
-        axi.set_title('Principal component {}'.format(i + 1))
+        fig, axi = plt.subplots(constrained_layout=True)
+        axi.set_title('Loading coefficients for PC{}'.format(i + 1))
         coefficients = np.transpose(pca.components_[i, :])
         try:
             if plot_type.lower().startswith('bar'):
@@ -66,7 +66,6 @@ def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
                 _pca_1d_loadings_component(axi, coefficients, xvars, colors)
         except AttributeError:
             _pca_1d_loadings_component(axi, coefficients, xvars, colors)
-        fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
     return figures, axes
@@ -173,6 +172,7 @@ def pca_loadings_bar(axi, coefficients, xvars, plot_type='bar'):
         xvars,
         rotation='vertical',
     )
+    axi.set_xlabel('Variables')
 
 
 def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
@@ -289,7 +289,7 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
     colors = generate_colors(len(xvars))
     selector = get_selector(components, select_components, 2)
     for idx1, idx2 in selector:
-        fig, axi = plt.subplots()
+        fig, axi = plt.subplots(constrained_layout=True)
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
         _pca_2d_loadings_component(axi, coefficients1, coefficients2,
@@ -313,7 +313,6 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
         else:
             # Do not do any styling.
             pass
-        fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
     return figures, axes
@@ -406,7 +405,7 @@ def pca_3d_loadings(pca, xvars, select_components=None):
     colors = generate_colors(len(xvars))
     selector = get_selector(components, select_components, 3)
     for idx1, idx2, idx3 in selector:
-        fig = plt.figure()
+        fig = plt.figure(constrained_layout=True)
         axi = fig.add_subplot(111, projection='3d')
         axi.set_xlabel('Principal component {}'.format(idx1 + 1), labelpad=15)
         axi.set_ylabel('Principal component {}'.format(idx2 + 1), labelpad=15)
@@ -416,7 +415,6 @@ def pca_3d_loadings(pca, xvars, select_components=None):
         coefficients3 = np.transpose(pca.components_[idx3, :])
         _pca_3d_loadings_component(axi, coefficients1, coefficients2,
                                    coefficients3, xvars, colors)
-        fig.tight_layout()
         figures.append(fig)
         axes.append(axi)
     return figures, axes

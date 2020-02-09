@@ -403,7 +403,7 @@ def pca_3d_scores(pca, scores, class_data=None, class_names=None,
     color_class, color_labels, idx_class = generate_class_colors(class_data)
     selector = get_selector(components, select_components, 3)
     for idx1, idx2, idx3 in selector:
-        fig = plt.figure()
+        fig = plt.figure(constrained_layout=True)
         axi = fig.add_subplot(111, projection='3d')
 
         if class_data is None:
@@ -428,4 +428,3 @@ def pca_3d_scores(pca, scores, class_data=None, class_names=None,
         axi.set_xlabel('Principal component {}'.format(idx1 + 1), labelpad=15)
         axi.set_ylabel('Principal component {}'.format(idx2 + 1), labelpad=15)
         axi.set_zlabel('Principal component {}'.format(idx3 + 1), labelpad=15)
-        fig.tight_layout()
