@@ -47,15 +47,23 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
     components = pca.n_components_
     color_class, color_labels, idx_class = generate_class_colors(class_data)
     selector = get_selector(components, select_components, 1)
-    colors = None
-    if xvars is not None:
-        colors = generate_colors(len(xvars))
+
+    colors = None if xvars is None else generate_colors(len(xvars))
+
     for idx1 in selector:
+        # Create new figure:
         if not add_loadings:
-            fig, axi = plt.subplots()
+            fig, axi = plt.subplots(constrained_layout=True)
             axl = None
         else:
-            fig, (axi, axl) = plt.subplots(nrows=2, ncols=1)
+            fig, (axi, axl) = plt.subplots(nrows=2, ncols=1, constrained_layout=True)
+        # Set up for axi:
+        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
+        for loc in ('left', 'right', 'top'):
+            axi.spines[loc].set_visible(False)
+        axi.get_yaxis().set_visible(False)
+        axi.spines['bottom'].set_position('zero')
+
         if class_data is None:
             axi.scatter(
                 scores[:, idx1],
@@ -73,11 +81,6 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
             create_scatter_legend(
                 axi, color_labels, class_names, show=True, **kwargs
             )
-        axi.set_xlabel('Principal component {}'.format(idx1 + 1))
-        for loc in ('left', 'right', 'top'):
-            axi.spines[loc].set_visible(False)
-        axi.get_yaxis().set_visible(False)
-        axi.spines['bottom'].set_position('zero')
         if add_loadings:
             _pca_1d_loadings_component(
                 axl,
@@ -85,9 +88,6 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
                 xvars,
                 colors,
             )
-            maxx = max(np.abs(axi.get_xlim()))
-            axi.set_xlim(-maxx, maxx)
-        fig.tight_layout()
 
 
 def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
@@ -127,17 +127,29 @@ def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
     """
     text = None
     scat = None
-    # First plot the "real" length:
-    line, = axi.plot([0, xcoeff], [0, ycoeff], color='black', alpha=0.8)
-    # Then extend the line so that the length is the given length:
     xlim, ylim = axi.get_xlim(), axi.get_ylim()
-    xend, yend = find_axis_intersection(axi, xcoeff, ycoeff)
-    if xend is None or yend is None:
+    # First plot the "real" length:
+    biplot = True
+    if settings.get('biplot', False):
         xend, yend = xcoeff, ycoeff
-    axi.plot(
-        [0, xend], [0, yend],
-        ls=':', color=line.get_color(), alpha=line.get_alpha()
-    )
+        scat_xend = xcoeff*1.01
+        scat_yend = ycoeff*1.01
+        axi.annotate('', xycoords='data', xy=(xcoeff, ycoeff), xytext=(0, 0),
+                     arrowprops=dict(arrowstyle='-|>', lw=2))
+    else:
+        # Add line and extend it:
+        line, = axi.plot(
+            [0, xcoeff], [0, ycoeff], color='black', alpha=0.8, zorder=2
+        )
+        xend, yend = find_axis_intersection(axi, xcoeff, ycoeff)
+        if xend is None or yend is None:
+            xend, yend = xcoeff, ycoeff
+        axi.plot(
+            [0, xend], [0, yend],
+            ls=':', color=line.get_color(), alpha=line.get_alpha()
+        )
+        scat_xend = xend * 0.99
+        scat_yend = yend * 0.99
     # Check if we should add text:
     if settings is not None and settings.get('add_text', False):
         text = axi.text(
@@ -149,18 +161,23 @@ def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
             verticalalignment='center',
             color=color,
             fontsize='large',
+            zorder=4,
         )
     if settings is not None and settings.get('add_legend', False):
         scat = axi.scatter(
-            xend * 0.99,
-            yend * 0.99,
+            scat_xend,
+            scat_yend,
             color=color,
             marker='X',
             label=label,
-            s=200
+            s=200,
+            edgecolor='black',
+            linewidths=1,
+            zorder=3,
         )
-    axi.set_xlim(xlim)
-    axi.set_ylim(ylim)
+    if not biplot:
+        axi.set_xlim(xlim)
+        axi.set_ylim(ylim)
     return text, scat
 
 
@@ -296,13 +313,40 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
         axi.set_ylabel('Principal component {}'.format(idx2 + 1))
         if loading_settings is not None:
             # Add lines for loadings:
-            extra_artists, legend = _add_2d_loading_lines(
-                axi,
-                pca.components_[idx1, :],
-                pca.components_[idx2, :],
-                xvars,
-                settings=loading_settings,
-            )
+            extra_artists, legend = None, None
+            if loading_settings.get('biplot', False):
+                # biplot mode:
+                axj = fig.add_subplot(111, label='extra', frame_on=False)
+                axj.xaxis.tick_top()
+                axj.yaxis.tick_right()
+                extra_artists, legend = _add_2d_loading_lines(
+                    axj,
+                    pca.components_[idx1, :],
+                    pca.components_[idx2, :],
+                    xvars,
+                    settings=loading_settings,
+                )
+                axj.set_xlim(-1, 1)
+                axj.set_ylim(-1, 1)
+                axj.set_xticks([-1, -0.5, 0.0, 0.5, 1])
+                axj.set_yticks([-1, -0.5, 0.0, 0.5, 1])
+                axj.set_xlabel('Loading for PC{}'.format(idx1 + 1))
+                axj.set_ylabel('Loading for PC{}'.format(idx2 + 1))
+                axj.yaxis.set_label_position('right')
+                axj.xaxis.set_label_position('top')
+
+                maxy = np.abs(axi.get_ylim()).max()
+                maxx = np.abs(axi.get_xlim()).max()
+                axi.set_ylim(-maxy, maxy)
+                axi.set_xlim(-maxx, maxx)
+            else:
+                extra_artists, legend = _add_2d_loading_lines(
+                    axi,
+                    pca.components_[idx1, :],
+                    pca.components_[idx2, :],
+                    xvars,
+                    settings=loading_settings,
+                )
             fig.tight_layout()
             if legend is not None and savefig is None:
                 renderer = fig.canvas.get_renderer()
@@ -316,7 +360,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
                     warnings.warn(
                         (
                             'Legend is too hight to fit in plot, consider '
-                            'saving the plot with the xxx setting'
+                            'saving the plot with the "savefig" setting'
                         ),
                         RuntimeWarning
                     )

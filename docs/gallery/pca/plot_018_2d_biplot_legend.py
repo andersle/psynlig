@@ -1,18 +1,19 @@
 # Copyright (c) 2020, Anders Lervik.
 # Distributed under the MIT License. See LICENSE for more info.
 """
-PCA Scores (2D) with loadings
-=============================
+PCA biplot
+==========
 
 This example will plot PCA scores along two principal axes and
-also show the loadings.
+also show the loadings. In this example we add axis for the loadings
+so that their values can be read directly.
 """
 from matplotlib import pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
-from psynlig import pca_2d_scores, pca_2d_loadings
+from psynlig import pca_2d_scores
 plt.style.use('seaborn-talk')
 
 data_set = load_breast_cancer()
@@ -38,9 +39,9 @@ pca = PCA()
 scores = pca.fit_transform(data)
 
 loading_settings = {
-    'adjust_text': False,
     'add_text': True,
-    'jiggle_text': True,
+    'add_legend': False,
+    'biplot': True,
 }
 
 pca_2d_scores(
@@ -52,7 +53,24 @@ pca_2d_scores(
     select_components={(1, 2)},
     loading_settings=loading_settings,
     s=200,
-    alpha=.8
+    alpha=.8,
 )
 
+loading_settings = {
+    'add_text': False,
+    'add_legend': True,
+    'biplot': True,
+}
+
+pca_2d_scores(
+    pca,
+    scores,
+    xvars,
+    class_data=class_data,
+    class_names=class_names,
+    select_components={(1, 2)},
+    loading_settings=loading_settings,
+    s=200,
+    alpha=.8,
+)
 plt.show()

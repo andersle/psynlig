@@ -27,6 +27,5 @@ pca.fit_transform(data)
 
 fig, axi = pca_explained_variance_pie(pca)
 axi.set_title('Explained variance by principal components')
-fig.tight_layout()
 
 plt.show()

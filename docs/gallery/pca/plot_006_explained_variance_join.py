@@ -32,13 +32,14 @@ data = scale(data)
 pca = PCA(n_components=4)
 pca.fit_transform(data)
 
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
+fig, (ax1, ax2) = plt.subplots(
+    nrows=1, ncols=2, figsize=(14, 6), constrained_layout=True
+)
 pca_explained_variance_bar(pca, axi=ax1, alpha=0.8)
 pca_explained_variance(pca, axi=ax2, marker='o', markersize=16, alpha=0.8)
 ax4 = ax2.twinx()
 pca_residual_variance(pca, ax4, marker='X', markersize=16, alpha=0.8,
                       color='black', linestyle='--')
-fig.tight_layout()
 ax3 = inset_axes(ax1, width='45%', height='45%', loc=9)
 pca_explained_variance_pie(pca, axi=ax3)
 
