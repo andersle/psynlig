@@ -33,6 +33,7 @@ kwargs = {
         'marker': 'o',
         's': 200,
         'alpha': 0.7,
+        'edgecolor': '0.4',
     },
 }
 
@@ -42,6 +43,7 @@ generate_1d_scatter(
     class_names=class_names,
     class_data=class_data,
     show_legend=True,
+    cmap_class='tab20b',
     **kwargs,
 )
 

@@ -21,6 +21,12 @@ data = scale(data)
 pca = PCA()
 pca.fit_transform(data)
 
-pca_1d_loadings(pca, data_set['feature_names'], select_components={2})
+text_settings = {
+    'fontsize': 'x-large',
+    'weight': 'bold',
+}
+
+pca_1d_loadings(pca, data_set['feature_names'], select_components={2},
+                text_settings=text_settings)
 
 plt.show()

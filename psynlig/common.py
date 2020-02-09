@@ -463,3 +463,47 @@ def iqr_outlier(data, variables):
     for vari in variables:
         outliers[vari] = out_of_bounds[out_of_bounds[vari]].index.values
     return out_of_bounds, outliers, (upper, lower)
+
+
+def get_text_settings(settings, default=None):
+    """Get text settings for loadings.
+
+    Parameters
+    ----------
+    settings : dict or None
+        The provided settings.
+    default : dict or None,
+        The default settings. In case None is given, we use
+        hard-coded default settings given here.
+
+    Returns
+    -------
+    text_settings : dict
+        A dict containing the text settings.
+    outline_settings : dict
+        A dict containing settings for creating a stroke outline.
+
+    """
+    outline_settings = {}
+    if default is None:
+        text_settings = {
+            'weight': 'bold',
+            'horizontalalignment': 'left',
+            'verticalalignment': 'center',
+            'fontsize': 'large',
+        }
+    else:
+        text_settings = copy.deepcopy(default)
+
+    if settings is None:
+        # Just return the defaults.
+        return text_settings, outline_settings
+
+    if settings:
+        text_settings.update(settings)
+
+    if 'outline' in text_settings:
+        outline_settings = {'linewidth': 1, 'foreground': 'black'}
+        outline_settings.update(text_settings.get('outline', {}))
+        del text_settings['outline']
+    return text_settings, outline_settings

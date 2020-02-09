@@ -30,8 +30,13 @@ data = pd.DataFrame(data_set['data'], columns=data_set['feature_names'])
 class_data = data_set['target']
 class_names = dict(enumerate(data_set['target_names']))
 
-plot_3d_scatter(data, 'sepal length (cm)', 'sepal width (cm)',
-                'petal length (cm)', class_names=class_names,
-                class_data=class_data, marker='o', s=200, alpha=0.7)
+plot_3d_scatter(
+    data,
+    'sepal length (cm)', 'petal width (cm)', 'petal length (cm)',
+    class_names=class_names,
+    class_data=class_data,
+    cmap_class='viridis',
+    marker='o', s=250, alpha=0.8, edgecolor='0.4'
+)
 
 plt.show()

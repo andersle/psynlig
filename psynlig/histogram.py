@@ -11,7 +11,8 @@ from .scatter import plot_scatter
 
 
 def histograms(data, variables, class_data=None, class_names=None,
-               nrows=None, ncols=None, sharex=False, sharey=False, **kwargs):
+               nrows=None, ncols=None, sharex=False, sharey=False,
+               cmap_class=None, **kwargs):
     """Generate histogram(s) from the given data.
 
     Parameters
@@ -34,6 +35,8 @@ def histograms(data, variables, class_data=None, class_names=None,
         If True, the histograms will share the x-axis.
     sharey : boolean, optional
         If True, the histograms will share the y-axis.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes (if any).
     kwargs : dict, optional
         Additional settings for the plotting.
 
@@ -62,6 +65,7 @@ def histograms(data, variables, class_data=None, class_names=None,
             xvar,
             class_data=class_data,
             class_names=class_names,
+            cmap_class=cmap_class,
             **kwargs.get('histogram1d', {}),
         )
         if axes[i].figure != fig:
@@ -71,7 +75,7 @@ def histograms(data, variables, class_data=None, class_names=None,
 
 
 def histogram1d(axi, data, variable, class_data=None, class_names=None,
-                **kwargs):
+                cmap_class=None, **kwargs):
     """Add a single histogram to the given axis.
 
     Parameters
@@ -86,11 +90,15 @@ def histogram1d(axi, data, variable, class_data=None, class_names=None,
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict, optional
         Additional settings for the plotting.
 
     """
-    color_class, _, idx_class = generate_class_colors(class_data)
+    color_class, _, idx_class = generate_class_colors(
+        class_data, cmap=cmap_class
+    )
     axi.set(xlabel=variable, ylabel=None)
     if class_data is None:
         axi.hist(data[variable], **kwargs)
@@ -183,7 +191,7 @@ def _histogram2d_contour(axi, data, xvar, yvar, show_contour,
 
 def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
                 show_hist=True, show_scatter=False, show_contour=False,
-                **kwargs):
+                cmap_class=None, **kwargs):
     """Generate a 2D histogram.
 
     Parameters
@@ -208,6 +216,8 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
         If different from False, we will add a contour plot.
         If ``show_contour = filled`` we will then plot filled
         contours, otherwise, we will plot just the contour lines.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict of dicts, optional
         Additional settings for the plot elements. It may contain the
         following keys:
@@ -235,7 +245,7 @@ def histogram2d(data, xvar, yvar, class_data=None, class_names=None,
     if show_scatter:
         plot_scatter(
             data, xvar, yvar, axi=axi, class_data=class_data,
-            class_names=class_names,
+            class_names=class_names, cmap_class=cmap_class,
             **kwargs.get('scatter', {})
         )
     if show_contour:

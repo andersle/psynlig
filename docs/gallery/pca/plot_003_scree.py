@@ -16,6 +16,7 @@ from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
 from psynlig import pca_scree
 plt.style.use('seaborn')
+plt.rcParams.update({'font.size': 16})
 
 data_set = load_wine()
 data = pd.DataFrame(data_set['data'], columns=data_set['feature_names'])

@@ -21,7 +21,17 @@ data = scale(data)
 pca = PCA()
 pca.fit_transform(data)
 
+
 pca_3d_loadings(pca, data_set['feature_names'],
                 select_components={(1, 2, 3)})
+
+
+text_settings = {'fontsize': 'xx-large', 'weight': 'bold',
+                 'outline': {'linewidth': 0.5}}
+
+pca_3d_loadings(pca, data_set['feature_names'],
+                select_components={(1, 2, 3)},
+                cmap='Spectral',
+                text_settings=text_settings)
 
 plt.show()

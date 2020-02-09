@@ -47,7 +47,7 @@ kwargs = {
         's': 200,
         'alpha': 0.7
     },
-    'figure': {'figsize': (14, 6)},
+    'figure': {'figsize': (12, 8)},
 }
 
 generate_2d_scatter(

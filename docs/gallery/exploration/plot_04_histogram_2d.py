@@ -13,7 +13,7 @@ import pandas as pd
 from sklearn.datasets import load_breast_cancer
 from psynlig import histogram2d
 plt.style.use('seaborn-dark')
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 16})
 
 
 data_set = load_breast_cancer()

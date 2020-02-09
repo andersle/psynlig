@@ -2,6 +2,7 @@
 # Distributed under the MIT License. See LICENSE for more info.
 """A module defining plots for contributions to principal components."""
 from matplotlib import pyplot as plt
+import matplotlib.patheffects as path_effects
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 import numpy as np
 from adjustText import adjust_text
@@ -11,11 +12,12 @@ from psynlig.common import (
     MARKERS,
     set_origin_axes,
     get_selector,
+    get_text_settings,
 )
 
 
 def pca_1d_loadings(pca, xvars, select_components=None,
-                    plot_type='line', cmap=None):
+                    plot_type='line', cmap=None, text_settings=None):
     """Plot the loadings from a PCA in a 1D plot.
 
     Parameters
@@ -43,6 +45,8 @@ def pca_1d_loadings(pca, xvars, select_components=None,
           value of contributions.
     cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
         A colormap to use for the components/variables.
+    text_settings : dict, optional
+        Additional settings for creating the text.
 
     Returns
     -------
@@ -66,15 +70,18 @@ def pca_1d_loadings(pca, xvars, select_components=None,
                 pca_loadings_bar(axi, coefficients, xvars,
                                  plot_type=plot_type.lower())
             else:
-                _pca_1d_loadings_component(axi, coefficients, xvars, colors)
+                _pca_1d_loadings_component(axi, coefficients, xvars, colors,
+                                           text_settings=text_settings)
         except AttributeError:
-            _pca_1d_loadings_component(axi, coefficients, xvars, colors)
+            _pca_1d_loadings_component(axi, coefficients, xvars, colors,
+                                       text_settings=text_settings)
         figures.append(fig)
         axes.append(axi)
     return figures, axes
 
 
-def _pca_1d_loadings_component(axi, coefficients, xvars, colors):
+def _pca_1d_loadings_component(axi, coefficients, xvars, colors,
+                               text_settings=None):
     """Plot the loadings for a single component in a 1D plot.
 
     This plot will show the components on a single line.
@@ -89,6 +96,8 @@ def _pca_1d_loadings_component(axi, coefficients, xvars, colors):
         Labels for the original variables.
     colors : list of floats or strings
         The colors used for the different labels.
+    text_settings : dict, optional
+        Additional settings for creating the text.
 
     """
     pos_b, pos_t = 0, 0
@@ -112,17 +121,30 @@ def _pca_1d_loadings_component(axi, coefficients, xvars, colors):
             ypos = 2 + pos_t
             valign = 'bottom'
         # Add text:
-        axi.text(
+        txt_settings, outline_settings = get_text_settings(
+            text_settings,
+            default={
+                'fontsize': 'large',
+                'horizontalalignment': 'center',
+                'backgroundcolor': 'white',
+            },
+        )
+        text = axi.text(
             coeff,
             ypos,
             xvars[i],
             color=colors[i],
-            fontsize='large',
-            horizontalalignment='center',
             verticalalignment=valign,
             zorder=4,
-            backgroundcolor='white',
+            **txt_settings,
         )
+        if outline_settings:
+            text.set_path_effects(
+                [
+                    path_effects.Stroke(**outline_settings),
+                    path_effects.Normal()
+                ]
+            )
         axi.plot(
             [coeff, coeff],
             [0, ypos],
@@ -252,7 +274,7 @@ def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
 
 
 def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
-                    cmap=None, style='box'):
+                    cmap=None, style='box', text_settings=None):
     """Show loadings for two principal compoents.
 
     Parameters
@@ -277,6 +299,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
         figure with inserted lines showing x=0 and y=0.
         For the style 'center' we place the x-axis and y-axis at
         the origin.
+    text_settings : dict, optional
+        Additional settings for creating the text.
 
     Returns
     -------
@@ -298,7 +322,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
         _pca_2d_loadings_component(axi, coefficients1, coefficients2,
-                                   xvars, colors, adjust_labels=adjust_labels)
+                                   xvars, colors, adjust_labels=adjust_labels,
+                                   text_settings=text_settings)
         axi.set(
             xlabel='Principal component {}'.format(idx1 + 1),
             ylabel='Principal component {}'.format(idx2 + 1),
@@ -324,7 +349,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
 
 
 def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
-                               xvars, colors, adjust_labels=False):
+                               xvars, colors, adjust_labels=False,
+                               text_settings=None):
     """Plot the loadings for two components in a 2D plot.
 
     Parameters
@@ -342,6 +368,8 @@ def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
     adjust_labels : boolean, optional
         If this is True, we will try to optimize the position of the
         labels so that they wont overlap.
+    text_settings : dict, optional
+        Additional settings for creating the text.
 
     """
     texts, points = [], []
@@ -356,13 +384,26 @@ def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
             color=colors[i],
         )
         points.append(scat)
+        txt_settings, outline_settings = get_text_settings(
+            text_settings,
+            default={
+                'fontsize': 'large',
+            },
+        )
         text = axi.text(
             coeff1,
             coeff2,
             xvars[i],
             color=colors[i],
-            fontsize='large',
+            **txt_settings,
         )
+        if outline_settings:
+            text.set_path_effects(
+                [
+                    path_effects.Stroke(**outline_settings),
+                    path_effects.Normal()
+                ]
+            )
         texts.append(text)
     if adjust_labels:
         adjust_text(
@@ -379,7 +420,8 @@ def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
     axi.set_ylim(-1, 1)
 
 
-def pca_3d_loadings(pca, xvars, select_components=None, cmap=None):
+def pca_3d_loadings(pca, xvars, select_components=None, cmap=None,
+                    text_settings=None):
     """Show contributions to three principal components.
 
     Parameters
@@ -395,6 +437,8 @@ def pca_3d_loadings(pca, xvars, select_components=None, cmap=None):
         given, all will be plotted.
     cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
         A colormap to use for the components/variables.
+    text_settings : dict, optional
+        Additional settings for creating the text.
 
     Returns
     -------
@@ -421,14 +465,16 @@ def pca_3d_loadings(pca, xvars, select_components=None, cmap=None):
         coefficients2 = np.transpose(pca.components_[idx2, :])
         coefficients3 = np.transpose(pca.components_[idx3, :])
         _pca_3d_loadings_component(axi, coefficients1, coefficients2,
-                                   coefficients3, xvars, colors)
+                                   coefficients3, xvars, colors,
+                                   text_settings=text_settings)
         figures.append(fig)
         axes.append(axi)
     return figures, axes
 
 
 def _pca_3d_loadings_component(axi, coefficients1, coefficients2,
-                               coefficients3, xvars, colors):
+                               coefficients3, xvars, colors,
+                               text_settings=None):
     """Show contributions to three principal components.
 
     Parameters
@@ -445,6 +491,8 @@ def _pca_3d_loadings_component(axi, coefficients1, coefficients2,
         Labels for the original variables.
     colors : list of floats or strings
         The colors used for the different labels.
+    text_settings : dict, optional
+        Additional settings for creating the text.
 
     """
     coeffs = zip(coefficients1, coefficients2, coefficients3)
@@ -458,14 +506,25 @@ def _pca_3d_loadings_component(axi, coefficients1, coefficients2,
             marker=MARKERS.get(i, 'o'),
             color=colors[i],
         )
-        axi.text(
+        txt_settings, outline_settings = get_text_settings(
+            text_settings,
+            default={'fontsize': 'xx-large'},
+        )
+        text = axi.text(
             coeff1 + 0.02,
             coeff2 + 0.02,
             coeff3 + 0.02,
             xvars[i],
             color=colors[i],
-            fontsize='x-large',
+            **txt_settings,
         )
+        if outline_settings:
+            text.set_path_effects(
+                [
+                    path_effects.Stroke(**outline_settings),
+                    path_effects.Normal()
+                ]
+            )
     axi.set_xlim(-1, 1)
     axi.set_ylim(-1, 1)
     axi.set_zlim(-1, 1)

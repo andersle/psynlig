@@ -57,7 +57,8 @@ pca_2d_scores(
     select_components={(1, 2)},
     loading_settings=loading_settings,
     s=200,
-    alpha=.8
+    alpha=.8,
+    cmap_class='Spectral',
 )
 
 plt.show()

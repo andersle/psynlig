@@ -51,7 +51,7 @@ pca_3d_scores(
     select_components={(1, 2, 3)},
     s=200,
     alpha=.8,
-    cmap_classes='Dark2',
+    cmap_class='Dark2',
 )
 
 plt.show()

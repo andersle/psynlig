@@ -28,6 +28,7 @@ pca_1d_scores(
     reduced_features,
     class_data=class_data,
     class_names=class_names,
+    cmap_class='Dark2',
     select_components={1, 2},
     s=200,
     alpha=.8

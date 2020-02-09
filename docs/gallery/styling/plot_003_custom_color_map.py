@@ -84,7 +84,7 @@ pca_2d_scores(
     select_components={(1, 2),},
     s=200,
     alpha=.8,
-    cmap_classes=dompap,
+    cmap_class=dompap,
 )
 
 

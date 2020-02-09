@@ -21,8 +21,12 @@ data = scale(data)
 pca = PCA()
 pca.fit_transform(data)
 
+text_settings = {'fontsize': 'x-large',
+                 'outline': {'foreground': '0.8'}}
+
 pca_2d_loadings(pca, data_set['feature_names'],
                 select_components={(3, 4)},
-                adjust_labels=True)
+                adjust_labels=True,
+                text_settings=text_settings)
 
 plt.show()

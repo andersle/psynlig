@@ -65,9 +65,9 @@ def create_scatter_legend(axi, color_labels, class_names, show=False,
     return patches, labels
 
 
-def plot_scatter(data, xvar, yvar, axi=None,
-                 class_data=None, class_names=None,
-                 highlight=None, **kwargs):
+def plot_scatter(data, xvar, yvar, axi=None, class_data=None,
+                 class_names=None, highlight=None,
+                 cmap_class=None, **kwargs):
     """Make a 2D scatter plot of the given data.
 
     Parameters
@@ -87,6 +87,8 @@ def plot_scatter(data, xvar, yvar, axi=None,
         A mapping from the class data to labels/names.
     highlight : list of integers, optional
         This can be used to highlight certain points in the plot.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict, optional
         Additional settings for the plotting.
 
@@ -103,7 +105,9 @@ def plot_scatter(data, xvar, yvar, axi=None,
 
     """
     patches, labels = [], []
-    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(
+        class_data, cmap=cmap_class
+    )
     fig = None
     if axi is None:
         fig_kw = get_figure_kwargs(kwargs)
@@ -140,10 +144,10 @@ def plot_scatter(data, xvar, yvar, axi=None,
     return fig, axi, patches, labels
 
 
-def generate_1d_scatter(data, variables, class_data=None, class_names=None,
-                        nrows=None, ncols=None, sharex=False, sharey=False,
-                        show_legend=True, outliers=False,
-                        **kwargs):
+def generate_1d_scatter(data, variables, class_data=None,
+                        class_names=None, nrows=None, ncols=None,
+                        sharex=False, sharey=False, show_legend=True,
+                        outliers=False, cmap_class=None, **kwargs):
     """Generate 1D scatter plots from the given data and variables.
 
     Parameters
@@ -168,6 +172,8 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
         If True, we will create a legend here and show it.
     outliers : boolean, optional
         If True, we will try to mark outliers in the plot.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict, optional
         Additional arguments used for the plotting.
 
@@ -209,6 +215,7 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
             class_data=class_data,
             class_names=class_names,
             highlight=highlight,
+            cmap_class=cmap_class,
             **kwargs,
         )
         if outliers:
@@ -227,6 +234,7 @@ def generate_1d_scatter(data, variables, class_data=None, class_names=None,
 def generate_2d_scatter(data, variables, class_data=None, class_names=None,
                         nrows=None, ncols=None, sharex=False, sharey=False,
                         show_legend=True, xy_line=False, trendline=False,
+                        cmap_class=None,
                         **kwargs):
     """Generate 2D scatter plots from the given data and variables.
 
@@ -257,6 +265,8 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
         If True, we will add a x=y line to the plot.
     trendline : boolean, optional
         If True, we will add a trend line to the plot.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict, optional
         Additional arguments used for the plotting.
 
@@ -287,6 +297,7 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
             axi=axes[i],
             class_data=class_data,
             class_names=class_names,
+            cmap_class=cmap_class,
             **kwargs,
         )
         if xy_line:
@@ -304,7 +315,7 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
 
 
 def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
-                    class_names=None, **kwargs):
+                    class_names=None, cmap_class=None, **kwargs):
     """Make a 3D scatter plot of the given data.
 
     Parameters
@@ -321,6 +332,8 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
         Class information for the points (if available).
     class_names : dict of strings, optional
         A mapping from the class data to labels/names.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict, optional
         Additional arguments used for the plotting.
 
@@ -332,7 +345,9 @@ def plot_3d_scatter(data, xvar, yvar, zvar, class_data=None,
         The axis containing the plot.
 
     """
-    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(
+        class_data, cmap=cmap_class
+    )
     fig = plt.figure()
     axi = fig.add_subplot(111, projection='3d')
     axi.set_xlabel(xvar, labelpad=15)

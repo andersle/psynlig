@@ -42,6 +42,11 @@ loading_settings = {
     'add_text': True,
     'add_legend': False,
     'biplot': True,
+    'text': {
+        'fontsize': 'x-large',
+        'alpha': 0.8,
+        'outline': {'linewidth': 1.5}
+    },
 }
 
 pca_2d_scores(
@@ -52,8 +57,9 @@ pca_2d_scores(
     class_names=class_names,
     select_components={(1, 2)},
     loading_settings=loading_settings,
-    s=200,
-    alpha=.8,
+    s=150,
+    alpha=.5,
+    cmap_loadings='plasma',
 )
 
 loading_settings = {
@@ -70,7 +76,8 @@ pca_2d_scores(
     class_names=class_names,
     select_components={(1, 2)},
     loading_settings=loading_settings,
-    s=200,
-    alpha=.8,
+    s=150,
+    alpha=.5,
+    cmap_class='Spectral',
 )
 plt.show()
