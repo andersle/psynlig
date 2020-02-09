@@ -40,7 +40,7 @@ reduced_features = pca.fit_transform(data)
 pca_1d_scores(
     pca,
     reduced_features,
-    xvars,
+    xvars=xvars,
     class_data=class_data,
     class_names=class_names,
     select_components={2},

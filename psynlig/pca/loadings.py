@@ -14,7 +14,8 @@ from psynlig.common import (
 )
 
 
-def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
+def pca_1d_loadings(pca, xvars, select_components=None,
+                    plot_type='line', cmap=None):
     """Plot the loadings from a PCA in a 1D plot.
 
     Parameters
@@ -40,6 +41,8 @@ def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
 
         * ``bar-absolute``: For generating a bar plot of the absolute
           value of contributions.
+    cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A colormap to use for the components/variables.
 
     Returns
     -------
@@ -52,7 +55,7 @@ def pca_1d_loadings(pca, xvars, select_components=None, plot_type='line'):
     figures = []
     axes = []
     components = pca.n_components_
-    colors = generate_colors(len(xvars))
+    colors = generate_colors(len(xvars), cmap=cmap)
     selector = get_selector(components, select_components, 1)
     for i in selector:
         fig, axi = plt.subplots(constrained_layout=True)
@@ -249,7 +252,7 @@ def pca_loadings_map(pca, xvars, val_fmt='{x:.2f}', bubble=False,
 
 
 def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
-                    style='box'):
+                    cmap=None, style='box'):
     """Show loadings for two principal compoents.
 
     Parameters
@@ -266,6 +269,8 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
     adjust_labels : boolean, optional
         If this is True, we will try to optimize the position of the
         labels so that they wont overlap.
+    cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A colormap to use for the components/variables.
     style : string, optional
         This option changes the styling of the plot.
         For style ``box``, we show the axes as a normal matplotlib
@@ -286,7 +291,7 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
     components = pca.n_components_
     if components < 2:
         raise ValueError('Too few (< 2) principal components for a 2D plot!')
-    colors = generate_colors(len(xvars))
+    colors = generate_colors(len(xvars), cmap=cmap)
     selector = get_selector(components, select_components, 2)
     for idx1, idx2 in selector:
         fig, axi = plt.subplots(constrained_layout=True)
@@ -374,7 +379,7 @@ def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
     axi.set_ylim(-1, 1)
 
 
-def pca_3d_loadings(pca, xvars, select_components=None):
+def pca_3d_loadings(pca, xvars, select_components=None, cmap=None):
     """Show contributions to three principal components.
 
     Parameters
@@ -388,6 +393,8 @@ def pca_3d_loadings(pca, xvars, select_components=None):
         we will create plot for. Note that the principal component
         numbering will here start from 1 (and not 0). If this is not
         given, all will be plotted.
+    cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A colormap to use for the components/variables.
 
     Returns
     -------
@@ -402,7 +409,7 @@ def pca_3d_loadings(pca, xvars, select_components=None):
     components = pca.n_components_
     if components < 3:
         raise ValueError('Too few (< 3) principal components for a 3D plot!')
-    colors = generate_colors(len(xvars))
+    colors = generate_colors(len(xvars), cmap=cmap)
     selector = get_selector(components, select_components, 3)
     for idx1, idx2, idx3 in selector:
         fig = plt.figure(constrained_layout=True)

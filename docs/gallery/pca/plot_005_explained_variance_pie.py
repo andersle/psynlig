@@ -25,7 +25,7 @@ data = scale(data)
 pca = PCA(n_components=5)
 pca.fit_transform(data)
 
-fig, axi = pca_explained_variance_pie(pca)
+fig, axi = pca_explained_variance_pie(pca, cmap='Spectral')
 axi.set_title('Explained variance by principal components')
 
 plt.show()

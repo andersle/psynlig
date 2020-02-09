@@ -50,7 +50,8 @@ pca_3d_scores(
     class_names=class_names,
     select_components={(1, 2, 3)},
     s=200,
-    alpha=.8
+    alpha=.8,
+    cmap_classes='Dark2',
 )
 
 plt.show()

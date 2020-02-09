@@ -17,8 +17,9 @@ from psynlig.scatter import create_scatter_legend
 from psynlig.pca.loadings import _pca_1d_loadings_component
 
 
-def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
-                  select_components=None, add_loadings=False, **kwargs):
+def pca_1d_scores(pca, scores, xvars=None, class_data=None, class_names=None,
+                  select_components=None, add_loadings=False,
+                  cmap_class=None, cmap_loadings=None, **kwargs):
     """Plot scores from a PCA model (1D).
 
     Parameters
@@ -27,8 +28,9 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
         The results from a PCA analysis.
     scores : object like :class:`numpy.ndarray`
         The scores we are to plot.
-    xvars : list of strings
-        Labels for the original variables.
+    xvars : list of strings, optional
+        Labels for the original variables. If not given,
+        we will just give them names like "var1", "var2", etc.
     class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings
@@ -40,15 +42,25 @@ def pca_1d_scores(pca, scores, xvars, class_data=None, class_names=None,
         given, all will be plotted.
     add_loadings : boolean, optional
         If this is True, we will add loadings to the plot.
+    cmap_class : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
+    cmap_loadings : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for loadings.
     kwargs : dict, optional
         Additional settings for the plotting.
 
     """
     components = pca.n_components_
-    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(
+        class_data, cmap=cmap_class
+    )
     selector = get_selector(components, select_components, 1)
 
-    colors = None if xvars is None else generate_colors(len(xvars))
+    colors = None  # Colors for loadings
+    if add_loadings:
+        if xvars is None:
+            xvars = ['var{}'.format(i + 1) for i in range(pca.n_features_)]
+        colors = generate_colors(len(xvars), cmap=cmap_loadings)
 
     for idx1 in selector:
         # Create new figure:
@@ -181,7 +193,7 @@ def _add_loading_line_text(axi, xcoeff, ycoeff, label, color='black',
     return text, scat
 
 
-def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
+def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars, cmap=None,
                           settings=None):
     """Add loading lines to a 2D scores plot.
 
@@ -195,6 +207,8 @@ def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
         The coefficients for the second principal component.
     xvars : list of strings
         The labels for the original variables.
+    cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for loadings.
     settings : dict, optional
         Settings for adding the loadings. Possible settings are:
 
@@ -218,7 +232,7 @@ def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
         The extra legend created here, if any.
 
     """
-    colors = generate_colors(len(xvars))
+    colors = generate_colors(len(xvars), cmap=cmap)
     texts, patches, labels = [], [], []
     legend = None
     for i, (coeff_x, coeff_y) in enumerate(zip(coefficients1, coefficients2)):
@@ -257,9 +271,10 @@ def _add_2d_loading_lines(axi, coefficients1, coefficients2, xvars,
     return extra_artists, legend
 
 
-def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
+def pca_2d_scores(pca, scores, xvars=None, class_data=None, class_names=None,
                   select_components=None, loading_settings=None,
-                  savefig=None, **kwargs):
+                  savefig=None, cmap_classes=None, cmap_loadings=None,
+                  **kwargs):
     """Plot scores from a PCA model anlong two PC's.
 
     Parameters
@@ -268,8 +283,9 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
         The results from a PCA analysis.
     scores : object like :class:`numpy.ndarray`
         The scores we are to plot.
-    xvars : list of strings
-        Labels for the original variables.
+    xvars : list of strings, optional
+        Labels for the original variables. If not given, we will
+        generate names like "var1", "var2", etc.
     class_data : object like :class:`pandas.core.series.Series`, optional
         Class information for the points (if available).
     class_names : dict of strings
@@ -285,6 +301,10 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
         If this is given, we will here save the figure to a file.
         This is included here due to potential problems with large
         legends and displaying them in a interactive plot.
+    cmap_classes : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
+    cmap_loadings : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for loadings.
     kwargs : dict, optional
         Additional settings for the plotting.
 
@@ -292,7 +312,9 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
     components = pca.n_components_
     if components < 2:
         raise ValueError('Too few (< 2) principal components for a 2D plot!')
-    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(
+        class_data, cmap=cmap_classes
+    )
     selector = get_selector(components, select_components, 2)
     for idx1, idx2 in selector:
         fig, axi = plt.subplots()
@@ -314,6 +336,8 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
         if loading_settings is not None:
             # Add lines for loadings:
             extra_artists, legend = None, None
+            if xvars is None:
+                xvars = ['var{}'.format(i + 1) for i in range(pca.n_features_)]
             if loading_settings.get('biplot', False):
                 # biplot mode:
                 axj = fig.add_subplot(111, label='extra', frame_on=False)
@@ -324,6 +348,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
                     pca.components_[idx1, :],
                     pca.components_[idx2, :],
                     xvars,
+                    cmap=cmap_loadings,
                     settings=loading_settings,
                 )
                 axj.set_xlim(-1, 1)
@@ -345,6 +370,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
                     pca.components_[idx1, :],
                     pca.components_[idx2, :],
                     xvars,
+                    cmap=cmap_loadings,
                     settings=loading_settings,
                 )
             fig.tight_layout()
@@ -375,7 +401,7 @@ def pca_2d_scores(pca, scores, xvars, class_data=None, class_names=None,
 
 
 def pca_3d_scores(pca, scores, class_data=None, class_names=None,
-                  select_components=None, **kwargs):
+                  select_components=None, cmap_classes=None, **kwargs):
     """Plot scores from a PCA model anlong two PC's.
 
     Parameters
@@ -393,6 +419,8 @@ def pca_3d_scores(pca, scores, class_data=None, class_names=None,
         we will create plot for. Note that the principal component
         numbering will here start from 1 (and not 0). If this is not
         given, all will be plotted.
+    cmap_classes : string or object like :class:`matplotlib.colors.Colormap`, optional
+        A color map to use for classes.
     kwargs : dict, optional
         Additional settings for the plotting.
 
@@ -400,7 +428,9 @@ def pca_3d_scores(pca, scores, class_data=None, class_names=None,
     components = pca.n_components_
     if components < 3:
         raise ValueError('Too few (< 3) principal components for a 3D plot!')
-    color_class, color_labels, idx_class = generate_class_colors(class_data)
+    color_class, color_labels, idx_class = generate_class_colors(
+        class_data, cmap=cmap_classes
+    )
     selector = get_selector(components, select_components, 3)
     for idx1, idx2, idx3 in selector:
         fig = plt.figure(constrained_layout=True)

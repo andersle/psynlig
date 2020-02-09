@@ -51,7 +51,7 @@ loading_settings = {
 pca_2d_scores(
     pca,
     scores,
-    xvars,
+    xvars=xvars,
     class_data=class_data,
     class_names=class_names,
     select_components={(1, 2)},

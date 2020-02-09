@@ -39,7 +39,6 @@ scores = pca.fit_transform(data)
 pca_2d_scores(
     pca,
     scores,
-    None,
     class_data=class_data,
     class_names=class_names,
     select_components={(1, 2), (1, 3), (2, 3)},

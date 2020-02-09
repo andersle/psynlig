@@ -166,7 +166,8 @@ def pca_explained_variance_bar(pca, axi=None, figsize=None, **kwargs):
     return fig, axi
 
 
-def pca_explained_variance_pie(pca, axi=None, figsize=None, tol=1.0e-3):
+def pca_explained_variance_pie(pca, axi=None, figsize=None,
+                               cmap=None, tol=1.0e-3):
     """Show the explained variance as function of PCA components in a pie.
 
     Parameters
@@ -178,6 +179,8 @@ def pca_explained_variance_pie(pca, axi=None, figsize=None, tol=1.0e-3):
         Otherwise, a new axis (and figure) will be created here.
     figsize : tuple of ints, optional
         A desired size of the figure, if created here.
+    cmap : string or object like :class:`matplotlib.colors.Colormap`, optional
+        The color map to use for generating colors.
     tol : float, optional
         A tolerance for the missing variance. If the unexplained
         variance is less than this tolerance, it will not be shown in
@@ -199,7 +202,7 @@ def pca_explained_variance_pie(pca, axi=None, figsize=None, tol=1.0e-3):
     if missing > tol:
         comp.append('Not explained')
         var.append(missing)
-    colors = generate_colors(len(comp))
+    colors = generate_colors(len(comp), cmap=cmap)
     axi.pie(
         var,
         labels=comp,
