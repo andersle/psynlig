@@ -65,8 +65,8 @@ def create_scatter_legend(axi, color_labels, class_names, show=False,
     return patches, labels
 
 
-def plot_scatter(data, xvar, yvar, axi=None, class_data=None,
-                 class_names=None, highlight=None,
+def plot_scatter(data, xvar, yvar, axi=None, xlabel=None, ylabel=None,
+                 class_data=None, class_names=None, highlight=None,
                  cmap_class=None, **kwargs):
     """Make a 2D scatter plot of the given data.
 
@@ -78,6 +78,10 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None,
         The column to use as the x-variable.
     yvar : string
         The column to use as the y-variable.
+    xlabel : string, optional
+        The label to use for the x-axis. If None, we will use xvar.
+    ylabel : string, optional
+        The label to use for the y-axis. If None, we will use yvar.
     axi : object like :class:`matplotlib.axes.Axes`, optional
         An axis to add the plot to. If this is not provided,
         a new axis (and figure) will be created here.
@@ -116,7 +120,9 @@ def plot_scatter(data, xvar, yvar, axi=None, class_data=None,
         axi.set(xlabel='Data point no.', ylabel=yvar)
         xdata = np.arange(len(data[yvar]))
     else:
-        axi.set(xlabel=xvar, ylabel=yvar)
+        xlabel = xvar if xlabel is None else xlabel
+        ylabel = yvar if ylabel is None else ylabel
+        axi.set(xlabel=xlabel, ylabel=ylabel)
         xdata = data[xvar]
     ydata = data[yvar]
 
@@ -234,7 +240,7 @@ def generate_1d_scatter(data, variables, class_data=None,
 def generate_2d_scatter(data, variables, class_data=None, class_names=None,
                         nrows=None, ncols=None, sharex=False, sharey=False,
                         show_legend=True, xy_line=False, trendline=False,
-                        cmap_class=None,
+                        cmap_class=None, shorten_variables=False,
                         **kwargs):
     """Generate 2D scatter plots from the given data and variables.
 
@@ -290,11 +296,20 @@ def generate_2d_scatter(data, variables, class_data=None, class_names=None,
         if axes[i].figure != fig:
             fig = axes[i].figure
             show_legend_ax = True
+        xlabel = None
+        ylabel = None
+        if shorten_variables:
+            if len(xvar) > 5:
+                xlabel = xvar[:3] + '...'
+            if len(yvar) > 5:
+                ylabel = yvar[:3] + '...'
         _, _, patches, labels = plot_scatter(
             data,
             xvar,
             yvar,
             axi=axes[i],
+            xlabel=xlabel,
+            ylabel=ylabel,
             class_data=class_data,
             class_names=class_names,
             cmap_class=cmap_class,
