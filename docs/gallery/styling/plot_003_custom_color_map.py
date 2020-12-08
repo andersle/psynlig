@@ -75,7 +75,7 @@ figures, axes = pca_2d_scores(
     scores,
     class_data=class_data,
     class_names=class_names,
-    select_components={(1, 2),},
+    select_components={(1, 2)},
     s=200,
     alpha=.8,
     cmap_class=dompap,
@@ -87,7 +87,10 @@ _, axi = pca_explained_variance_pie(pca, cmap=colorbrewer)
 axi.set_title('Using a colorbrewer color map:')
 
 _, axes = pca_1d_loadings(
-    pca, data_set['feature_names'], select_components={1,}, cmap=bold,
+    pca,
+    data_set['feature_names'],
+    select_components={1},
+    cmap=bold,
     text_settings={'weight': 'bold', 'fontsize': 'x-large'}
 )
 axes[0].set_title('Loadings with the "bold" color map:')

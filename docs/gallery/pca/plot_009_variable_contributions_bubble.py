@@ -32,10 +32,23 @@ kwargs = {
 
 
 # Plot the value of the coefficients:
-pca_loadings_map(pca, data_set['feature_names'],
-                 bubble=True, annotate=False, **kwargs)
+pca_loadings_map(
+    pca,
+    data_set['feature_names'],
+    bubble=True,
+    annotate=False,
+    **kwargs
+)
+
 # Plot the absolute value of the coefficients:
 kwargs['heatmap']['vmin'] = 0
-pca_loadings_map(pca, data_set['feature_names'],
-                 bubble=True, annotate=False, plot_style='absolute', **kwargs)
+pca_loadings_map(
+    pca,
+    data_set['feature_names'],
+    bubble=True,
+    annotate=False,
+    plot_style='absolute',
+    **kwargs
+)
+
 plt.show()

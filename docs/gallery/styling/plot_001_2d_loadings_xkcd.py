@@ -5,9 +5,10 @@ PCA Loadings (2D) with xkcd style and centered axes
 ===================================================
 
 This example will plot PCA loadings along two principal axes.
-Here we employ the xkcd style and also modify the loadings
-plot to use centered axes (that is, the axes go through
-the origin).
+Here we employ the
+`xkcd style <https://matplotlib.org/gallery/showcase/xkcd.html>`_
+and also modify the loadings plot to use centered axes
+(that is, the axes go through the origin).
 """
 from matplotlib import pyplot as plt
 import pandas as pd
@@ -24,9 +25,11 @@ data = scale(data)
 pca = PCA()
 pca.fit_transform(data)
 
-pca_2d_loadings(pca, data_set['feature_names'],
-                select_components={(1, 2)},
-                adjust_labels=True,
-                style='center')
+pca_2d_loadings(
+    pca,
+    data_set['feature_names'],
+    select_components={(1, 2)},
+    style='center'
+)
 
 plt.show()

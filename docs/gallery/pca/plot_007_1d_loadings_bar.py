@@ -22,11 +22,12 @@ data = scale(data)
 pca = PCA()
 pca.fit_transform(data)
 
-pca_1d_loadings(pca, data_set['feature_names'], select_components={2},
-                plot_type='bar')
-pca_1d_loadings(pca, data_set['feature_names'], select_components={2},
-                plot_type='bar-square')
-pca_1d_loadings(pca, data_set['feature_names'], select_components={2},
-                plot_type='bar-absolute')
+for plot_type in ('bar', 'bar-square', 'bar-absolute'):
+    pca_1d_loadings(
+        pca,
+        data_set['feature_names'],
+        select_components={2},
+        plot_type=plot_type,
+    )
 
 plt.show()

@@ -38,8 +38,15 @@ fig, (ax1, ax2) = plt.subplots(
 pca_explained_variance_bar(pca, axi=ax1, alpha=0.8)
 pca_explained_variance(pca, axi=ax2, marker='o', markersize=16, alpha=0.8)
 ax4 = ax2.twinx()
-pca_residual_variance(pca, ax4, marker='X', markersize=16, alpha=0.8,
-                      color='black', linestyle='--')
+pca_residual_variance(
+    pca,
+    ax4,
+    marker='X',
+    markersize=16,
+    alpha=0.8,
+    color='black',
+    linestyle='--'
+)
 ax3 = inset_axes(ax1, width='45%', height='45%', loc=9)
 pca_explained_variance_pie(pca, axi=ax3, cmap='tab20')
 
