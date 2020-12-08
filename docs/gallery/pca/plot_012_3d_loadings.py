@@ -46,4 +46,15 @@ pca_3d_loadings(
     text_settings=text_settings
 )
 
+# Remove text from plot and add legend:
+_, axes = pca_3d_loadings(
+    pca,
+    data_set['feature_names'],
+    select_components={(1, 2, 3)},
+    cmap='Spectral',
+    text_settings={'show': False},
+)
+for axi in axes:
+    axi.legend()
+
 plt.show()

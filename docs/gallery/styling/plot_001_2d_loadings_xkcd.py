@@ -32,4 +32,15 @@ pca_2d_loadings(
     style='center'
 )
 
+# Remove text and add legend:
+_, axes = pca_2d_loadings(
+    pca,
+    data_set['feature_names'],
+    select_components={(1, 2)},
+    style='center',
+    text_settings={'show': False},
+)
+for axi in axes:
+    axi.legend(loc='upper left')
+
 plt.show()

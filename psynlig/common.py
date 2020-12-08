@@ -11,18 +11,28 @@ from scipy.stats import pearsonr
 from shapely.geometry import Polygon
 
 
-MARKERS = {
-    0: 'o',
-    1: 's',
-    2: 'X',
-    3: 'D',
-    4: 'v',
-    5: '^',
-    6: '<',
-    7: '>',
-    8: 'P',
-    9: '*',
-}
+MARKERS = [
+    'o',
+    's',
+    'X',
+    'D',
+    'v',
+    '^',
+    '<',
+    '>',
+    'P',
+    '*',
+    '8',
+    'h',
+    'H',
+    '+',
+    'x',
+    'd',
+    '1',
+    '2',
+    '3',
+    '4',
+]
 
 
 GRID = {
