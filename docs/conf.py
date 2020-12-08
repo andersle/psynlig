@@ -88,14 +88,16 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
-    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'python': (
+        'https://docs.python.org/{.major}'.format(sys.version_info), None
+    ),
+    'numpy': ('https://numpy.org/doc/stable/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     'matplotlib': ('https://matplotlib.org/', None),
     'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
-    'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
-    'pandas': ('https://pandas.pydata.org/', None),
+    'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
 }
 
 # Settings for gallery:

@@ -10,8 +10,9 @@ than in the plot, to avoid making the plot too crowded.
 
 For better results, the parameter ``savefig`` can be used
 when calling :meth:`.pca_2d_scores` to store the plot directly to a
-file. In this case, the plot is better adjusted to accompany all
-elements.
+(svg) file. In many cases, it is better to adjust the plot
+in an external tool, e.g. `inkscape <https://inkscape.org/>`_,
+to accompany all elements.
 """
 from matplotlib import pyplot as plt
 import pandas as pd
