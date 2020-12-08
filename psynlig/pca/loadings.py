@@ -108,7 +108,7 @@ def _pca_1d_loadings_component(axi, coefficients, xvars, colors,
             0,
             s=200,
             label=xvars[i],
-            marker=MARKERS.get(i, 'o'),
+            marker=MARKERS[i % len(MARKERS)],
             color=colors[i],
             zorder=4,
         )
@@ -321,9 +321,15 @@ def pca_2d_loadings(pca, xvars, select_components=None, adjust_labels=False,
         fig, axi = plt.subplots(constrained_layout=True)
         coefficients1 = np.transpose(pca.components_[idx1, :])
         coefficients2 = np.transpose(pca.components_[idx2, :])
-        _pca_2d_loadings_component(axi, coefficients1, coefficients2,
-                                   xvars, colors, adjust_labels=adjust_labels,
-                                   text_settings=text_settings)
+        _pca_2d_loadings_component(
+            axi,
+            coefficients1,
+            coefficients2,
+            xvars,
+            colors,
+            adjust_labels=adjust_labels,
+            text_settings=text_settings
+        )
         axi.set(
             xlabel='Principal component {}'.format(idx1 + 1),
             ylabel='Principal component {}'.format(idx2 + 1),
@@ -380,7 +386,7 @@ def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
             coeff2,
             s=200,
             label=xvars[i],
-            marker=MARKERS.get(i, 'o'),
+            marker=MARKERS[i % len(MARKERS)],
             color=colors[i],
         )
         points.append(scat)
@@ -390,22 +396,23 @@ def _pca_2d_loadings_component(axi, coefficients1, coefficients2,
                 'fontsize': 'large',
             },
         )
-        text = axi.text(
-            coeff1,
-            coeff2,
-            xvars[i],
-            color=colors[i],
-            **txt_settings,
-        )
-        if outline_settings:
-            text.set_path_effects(
-                [
-                    path_effects.Stroke(**outline_settings),
-                    path_effects.Normal()
-                ]
+        if txt_settings.get('show', True):
+            text = axi.text(
+                coeff1,
+                coeff2,
+                xvars[i],
+                color=colors[i],
+                **txt_settings,
             )
-        texts.append(text)
-    if adjust_labels:
+            if outline_settings:
+                text.set_path_effects(
+                    [
+                        path_effects.Stroke(**outline_settings),
+                        path_effects.Normal()
+                    ]
+                )
+            texts.append(text)
+    if adjust_labels and texts:
         adjust_text(
             texts,
             add_objects=points,
@@ -503,7 +510,7 @@ def _pca_3d_loadings_component(axi, coefficients1, coefficients2,
             coeff3,
             s=200,
             label=xvars[i],
-            marker=MARKERS.get(i, 'o'),
+            marker=MARKERS[i % len(MARKERS)],
             color=colors[i],
         )
         txt_settings, outline_settings = get_text_settings(
