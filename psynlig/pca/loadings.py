@@ -517,21 +517,22 @@ def _pca_3d_loadings_component(axi, coefficients1, coefficients2,
             text_settings,
             default={'fontsize': 'xx-large'},
         )
-        text = axi.text(
-            coeff1 + 0.02,
-            coeff2 + 0.02,
-            coeff3 + 0.02,
-            xvars[i],
-            color=colors[i],
-            **txt_settings,
-        )
-        if outline_settings:
-            text.set_path_effects(
-                [
-                    path_effects.Stroke(**outline_settings),
-                    path_effects.Normal()
-                ]
+        if txt_settings.get('show', True):
+            text = axi.text(
+                coeff1 + 0.02,
+                coeff2 + 0.02,
+                coeff3 + 0.02,
+                xvars[i],
+                color=colors[i],
+                **txt_settings,
             )
+            if outline_settings:
+                text.set_path_effects(
+                    [
+                        path_effects.Stroke(**outline_settings),
+                        path_effects.Normal()
+                    ]
+                )
     axi.set_xlim(-1, 1)
     axi.set_ylim(-1, 1)
     axi.set_zlim(-1, 1)
