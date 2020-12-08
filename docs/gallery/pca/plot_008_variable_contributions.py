@@ -34,18 +34,30 @@ kwargs = {
 
 
 # Plot the value of the coefficients:
-pca_loadings_map(pca, data_set['feature_names'],
-                 textcolors=['white', 'black'], **kwargs)
+pca_loadings_map(
+    pca,
+    data_set['feature_names'],
+    textcolors=['white', 'black'],
+    **kwargs
+)
 
 # Plot the absolute value of the coefficients:
 kwargs['heatmap']['vmin'] = 0
-pca_loadings_map(pca, data_set['feature_names'],
-                 textcolors=['white', 'black'],
-                 plot_style='absolute', **kwargs)
+pca_loadings_map(
+    pca,
+    data_set['feature_names'],
+    textcolors=['white', 'black'],
+    plot_style='absolute',
+    **kwargs
+)
 
 # Plot the squared value of the coefficients:
-pca_loadings_map(pca, data_set['feature_names'],
-                 textcolors=['white', 'black'],
-                 plot_style='squared', **kwargs)
+pca_loadings_map(
+    pca,
+    data_set['feature_names'],
+    textcolors=['white', 'black'],
+    plot_style='squared',
+    **kwargs
+)
 
 plt.show()

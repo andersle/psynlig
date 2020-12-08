@@ -209,6 +209,7 @@ def pca_explained_variance_pie(pca, axi=None, figsize=None,
         colors=colors[:len(comp)],
         wedgeprops=dict(width=0.5, edgecolor='w'),
         textprops={'fontsize': 'x-large'},
+        normalize=False,
     )
     axi.set(aspect='equal')
     return fig, axi
