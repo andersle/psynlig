@@ -42,17 +42,17 @@ if not RELEASE:
 
 
 def generate_version_string(version):
-    """Generate a string with the current PyRETIS version.
+    """Generate a string with the current pysynlig version.
 
     Parameters
     ----------
     version : dict
-        A dict containing the current PyRETIS version.
+        A dict containing the current psynlig version.
 
     Returns
     -------
     version_txt : string
-        A string with the current PyRETIS version.
+        A string with the current psynlig version.
 
     """
     version_fmt = VERSION_FMT if version['release'] else VERSION_DEV_FMT
@@ -92,7 +92,7 @@ def get_git_version():
 
 
 def get_version_info(version):
-    """Return the version number for PyRETIS.
+    """Return the version number for psynlig.
 
     This method is adapted from Numpy's setup.py.
 
@@ -114,11 +114,11 @@ def get_version_info(version):
         git_revision = get_git_version()
     elif pathlib.Path(VERSION_FILE).is_file():
         try:
-            from pyretis.version import git_revision
+            from psynlig.version import git_revision
         except ImportError:
             raise ImportError(
                 'Unable to import git_revision. Try removing '
-                'pyretis/version.py and the build directory '
+                'psynlig/version.py and the build directory '
                 'before building.'
             )
     else:
@@ -138,7 +138,7 @@ def get_version_info(version):
 
 
 def write_version_py(version):
-    """Create a file with the version info for PyRETIS.
+    """Create a file with the version info for psynlig.
 
     This method is adapted from Numpy's setup.py.
 
@@ -150,7 +150,7 @@ def write_version_py(version):
     Returns
     -------
     full_version : string
-        The current full version for PyRETIS
+        The current full version for psynlig. 
 
     """
     full_version, git_revision, git_version = get_version_info(version)
