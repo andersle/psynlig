@@ -2,7 +2,7 @@ numpy
 matplotlib
 scipy
 pandas
-sklearn
+scikit-learn
 jupyter
 sphinx
 sphinx_rtd_theme
